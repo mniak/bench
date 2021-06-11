@@ -2,35 +2,36 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
-	"github.com/mniak/bench/lib"
+	bench "github.com/mniak/bench/lib"
 	"github.com/spf13/cobra"
 )
 
 var testCmd = &cobra.Command{
-	Use:  "test <program> [<arguments>]",
+	Use:  "test [flags] -- <program> [<arguments>]",
 	Args: cobra.MinimumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		testName, err := cmd.Flags().GetString("test-name")
-		if err != nil {
-			return err
-		}
-		input, err := cmd.Flags().GetString("input")
-		if err != nil {
-			return err
-		}
-		expectedOutput, err := cmd.Flags().GetString("output")
-		if err != nil {
-			return err
-		}
-		workingDir, err := cmd.Flags().GetString("working-dir")
-		if err != nil {
-			return err
+	Run: func(cmd *cobra.Command, args []string) {
+		testName, err := cmd.Flags().GetString("name")
+		handle(err)
+
+		input, err := cmd.Flags().GetString("in")
+		handle(err)
+
+		expectedOutput, err := cmd.Flags().GetString("out")
+		handle(err)
+
+		workingDir, err := cmd.Flags().GetString("dir")
+		handle(err)
+
+		if testName != "" {
+			fmt.Printf("Running test " + testName + "...\n")
+		} else {
+			fmt.Println("Running test...")
 		}
 
-		fmt.Printf("Running test %s...\n", testName)
-		t := lib.Test{
+		t := bench.Test{
 			Program:        args[0],
 			Input:          input,
 			ExpectedOutput: expectedOutput,
@@ -38,9 +39,7 @@ var testCmd = &cobra.Command{
 			WorkingDir:     workingDir,
 		}
 		err = t.Start()
-		if err != nil {
-			return err
-		}
+		handle(err)
 
 		if t.Input != "" {
 			fmt.Println("------------- INPUT -------------")
@@ -70,24 +69,25 @@ var testCmd = &cobra.Command{
 			fmt.Println(t.ExpectedOutput)
 
 			const spaces = "  "
-			return fmt.Errorf(template, "FAIL",
+			fmt.Fprintf(os.Stderr, template, "FAIL",
 				strings.ReplaceAll(err.Error(), "\n", "\n"+spaces),
 			)
+			os.Exit(2)
 		}
 		fmt.Printf(template, "PASS", testName)
 
 		if t.Input != "" || r.Output != "" || r.ErrorOutput != "" {
 			fmt.Println("-------------- END --------------")
 		}
-		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(testCmd)
-	testCmd.Flags().StringP("working-dir", "w", "", "Working directory")
-	testCmd.Flags().StringP("input", "i", "", "Test input")
-	testCmd.Flags().StringP("output", "o", "", "Test output")
+	testCmd.Flags().StringP("in", "i", "", "Test input")
+	testCmd.Flags().StringP("out", "o", "", "Expected test output")
+	testCmd.Flags().StringP("dir", "d", "", "Working directory")
+	testCmd.Flags().StringP("name", "n", "", "Test name")
 
 	testCmd.MarkFlagRequired("input")
 	testCmd.MarkFlagRequired("output")
