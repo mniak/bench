@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/andreyvit/diff"
@@ -37,7 +38,11 @@ func (t *Test) Start() error {
 
 	program := t.Program
 	if !path.IsAbs(t.Program) {
-		program = path.Join(t.WorkingDir, t.Program)
+		var err error
+		program, err = filepath.Abs(path.Join(t.WorkingDir, t.Program))
+		if err != nil {
+			return err
+		}
 	}
 
 	t.cmd = exec.Command(program, t.Args...)
