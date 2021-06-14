@@ -3,22 +3,32 @@ package bench
 import (
 	"errors"
 	"io/ioutil"
+	"os"
 	"path"
 
 	"github.com/mniak/bench/lib/toolchain"
 )
 
 var (
-	ErrMainNotFound = errors.New("program main not found")
-	ErrNoToolchain  = errors.New("could not get the appropriate")
+	ErrProgramNotFound = errors.New("program not found")
+	ErrNoToolchain     = errors.New("could not get the appropriate")
 )
 
-func findMain(folder string) (string, error) {
+func findMain(filenameOrFolder string) (string, error) {
+	info, err := os.Stat(filenameOrFolder)
+	if os.IsNotExist(err) {
+		return "", ErrProgramNotFound
+	}
+
+	if !info.IsDir() {
+		return filenameOrFolder, nil
+	}
+
 	ignoredExtensions := []string{
 		".exe", ".dll", ".obj",
 		".o", ".so",
 	}
-	files, err := ioutil.ReadDir(folder)
+	files, err := ioutil.ReadDir(filenameOrFolder)
 	if err != nil {
 		return "", err
 	}
@@ -32,10 +42,10 @@ func findMain(folder string) (string, error) {
 				continue
 			}
 		}
-		return path.Join(folder, fi.Name()), nil
+		return path.Join(filenameOrFolder, fi.Name()), nil
 	}
 
-	return "", ErrMainNotFound
+	return "", ErrProgramNotFound
 }
 
 func buildToolchain(mainfile string) (toolchain.Toolchain, error) {
