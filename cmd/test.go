@@ -16,10 +16,10 @@ var testCmd = &cobra.Command{
 		testName, err := cmd.Flags().GetString("name")
 		handle(err)
 
-		input, err := cmd.Flags().GetString("in")
+		input, err := cmd.Flags().GetString("input")
 		handle(err)
 
-		expectedOutput, err := cmd.Flags().GetString("out")
+		expectedOutput, err := cmd.Flags().GetString("output")
 		handle(err)
 
 		workingDir, err := cmd.Flags().GetString("dir")
@@ -84,8 +84,8 @@ var testCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(testCmd)
-	testCmd.Flags().StringP("in", "i", "", "Test input")
-	testCmd.Flags().StringP("out", "o", "", "Expected test output")
+	testCmd.Flags().StringP("input", "i", "", "Test input")
+	testCmd.Flags().StringP("output", "o", "", "Expected test output")
 	testCmd.Flags().StringP("dir", "d", "", "Working directory")
 	testCmd.Flags().StringP("name", "n", "", "Test name")
 
