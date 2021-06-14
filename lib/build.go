@@ -50,7 +50,7 @@ func buildToolchain(mainfile string) (toolchain.Toolchain, error) {
 	return nil, ErrNoToolchain
 }
 
-func Run(path string) error {
+func Build(path string) error {
 	mainfile, err := findMain(path)
 	if err != nil {
 		return err
