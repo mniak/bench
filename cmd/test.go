@@ -26,9 +26,9 @@ var testCmd = &cobra.Command{
 		handle(err)
 
 		if testName != "" {
-			fmt.Printf("Running test " + testName + "...\n")
+			fmt.Printf("Test %s running...\n", testName)
 		} else {
-			fmt.Println("Running test...")
+			fmt.Println("Test running...")
 		}
 
 		t := bench.Test{
@@ -38,56 +38,61 @@ var testCmd = &cobra.Command{
 			Args:           args[1:],
 			WorkingDir:     workingDir,
 		}
-		err = t.Start()
-		handle(err)
-
-		if t.Input != "" {
-			fmt.Println("------------- INPUT -------------")
-			fmt.Println(t.Input)
-		}
-
-		r, err := t.Wait()
-
-		if r.Output != "" {
-			fmt.Println("------------- OUTPUT ------------")
-			fmt.Println(r.Output)
-		}
-		if r.ErrorOutput != "" {
-			fmt.Println("------------- ERROR -------------")
-			fmt.Println(r.ErrorOutput)
-		}
-
-		var template string
-		if testName != "" {
-			template = "Test " + testName + " - %s: %s\n"
-		} else {
-			template = "Test - %s: %s\n"
-		}
-
-		if err != nil {
-			fmt.Println("-------- EXPECTED OUTPUT --------")
-			fmt.Println(t.ExpectedOutput)
-
-			const spaces = "  "
-			fmt.Fprintf(os.Stderr, template, "FAIL",
-				strings.ReplaceAll(err.Error(), "\n", "\n"+spaces),
-			)
-			os.Exit(2)
-		}
-		fmt.Printf(template, "PASS", testName)
-
-		if t.Input != "" || r.Output != "" || r.ErrorOutput != "" {
-			fmt.Println("-------------- END --------------")
-		}
+		handle(runTest(t, testName))
 	},
+}
+
+func runTest(test bench.Test, testName string) error {
+	err := test.Start()
+	handle(err)
+
+	if test.Input != "" {
+		fmt.Println("------------- INPUT -------------")
+		fmt.Println(test.Input)
+	}
+
+	r, err := test.Wait()
+
+	if r.Output != "" {
+		fmt.Println("------------- OUTPUT ------------")
+		fmt.Println(r.Output)
+	}
+	if r.ErrorOutput != "" {
+		fmt.Println("------------- ERROR -------------")
+		fmt.Println(r.ErrorOutput)
+	}
+
+	var template string
+	if testName != "" {
+		template = "Test " + testName + " - %s: %s\n"
+	} else {
+		template = "Test - %s: %s\n"
+	}
+
+	if err != nil {
+		fmt.Println("-------- EXPECTED OUTPUT --------")
+		fmt.Println(test.ExpectedOutput)
+
+		const spaces = "  "
+		fmt.Fprintf(os.Stderr, template, "FAIL",
+			strings.ReplaceAll(err.Error(), "\n", "\n"+spaces),
+		)
+		os.Exit(2)
+	}
+	fmt.Printf(template, "PASS", testName)
+
+	if test.Input != "" || r.Output != "" || r.ErrorOutput != "" {
+		fmt.Println("-------------- END --------------")
+	}
+	return nil
 }
 
 func init() {
 	rootCmd.AddCommand(testCmd)
 	testCmd.Flags().StringP("input", "i", "", "Test input")
 	testCmd.Flags().StringP("output", "o", "", "Expected test output")
-	testCmd.Flags().StringP("dir", "d", "", "Working directory")
 	testCmd.Flags().StringP("name", "n", "", "Test name")
+	testCmd.PersistentFlags().StringP("dir", "d", "", "Working directory")
 
 	testCmd.MarkFlagRequired("input")
 	testCmd.MarkFlagRequired("output")

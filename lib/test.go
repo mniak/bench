@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"path"
 	"strings"
 
 	"github.com/andreyvit/diff"
@@ -34,7 +35,12 @@ func (t *Test) Start() error {
 	t.stdout = new(bytes.Buffer)
 	t.stderr = new(bytes.Buffer)
 
-	t.cmd = exec.Command(t.Program, t.Args...)
+	program := t.Program
+	if !path.IsAbs(t.Program) {
+		program = path.Join(t.WorkingDir, t.Program)
+	}
+
+	t.cmd = exec.Command(program, t.Args...)
 	t.cmd.Dir = t.WorkingDir
 	t.cmd.Stdin = t.stdin
 	t.cmd.Stdout = t.stdout
