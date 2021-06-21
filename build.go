@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=mock_bench/build_test.go . ProgramFinder,ToolchainProducer
+
 package bench
 
 import (
@@ -53,18 +55,34 @@ func buildToolchain(mainfile string) (toolchain.Toolchain, error) {
 	return nil, toolchain.ErrToolchainNotFound
 }
 
-func Build(path string) error {
-	mainfile, err := findMain(path)
-	if err != nil {
-		return err
+type (
+	ProgramFinder interface {
+		Find(string) (string, error)
 	}
-	tchain, err := buildToolchain(mainfile)
-	if err != nil {
-		return err
+	ToolchainProducer interface {
+		Produce(string) (toolchain.Toolchain, error)
 	}
-	_, err = tchain.Build(mainfile)
+)
+
+type Builder struct {
+	programFinder     ProgramFinder
+	toolchainProducer ToolchainProducer
+}
+
+func (b *Builder) Build(path string) (string, error) {
+	mainfile, err := b.programFinder.Find(path)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	tchain, err := b.toolchainProducer.Produce(mainfile)
+	if err != nil {
+		return "", err
+	}
+	return tchain.Build(mainfile)
+}
+
+var DefaultBuilder Builder = Builder{}
+
+func Build(path string) (string, error) {
+	return DefaultBuilder.Build(path)
 }

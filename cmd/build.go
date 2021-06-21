@@ -10,7 +10,8 @@ var runCmd = &cobra.Command{
 	Use:  "build <folder>",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		handle(bench.Build(args[0]))
+		_, err := bench.Build(args[0])
+		handle(err)
 	},
 }
 
