@@ -11,7 +11,7 @@ import (
 
 var testCmd = &cobra.Command{
 	Use:  "test [flags] -- <program> [<arguments>]",
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		testName, err := cmd.Flags().GetString("name")
 		handle(err)
@@ -20,9 +20,6 @@ var testCmd = &cobra.Command{
 		handle(err)
 
 		expectedOutput, err := cmd.Flags().GetString("output")
-		handle(err)
-
-		workingDir, err := cmd.Flags().GetString("dir")
 		handle(err)
 
 		if testName != "" {
@@ -35,8 +32,6 @@ var testCmd = &cobra.Command{
 			Program:        args[0],
 			Input:          input,
 			ExpectedOutput: expectedOutput,
-			Args:           args[1:],
-			WorkingDir:     workingDir,
 		}
 		handle(runTest(t, testName))
 	},
@@ -92,7 +87,6 @@ func init() {
 	testCmd.Flags().StringP("input", "i", "", "Test input")
 	testCmd.Flags().StringP("output", "o", "", "Expected test output")
 	testCmd.Flags().StringP("name", "n", "", "Test name")
-	testCmd.PersistentFlags().StringP("dir", "d", "", "Working directory")
 
 	testCmd.MarkFlagRequired("input")
 	testCmd.MarkFlagRequired("output")

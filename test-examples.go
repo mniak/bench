@@ -5,6 +5,8 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	"github.com/mniak/bench/internal/utils"
 )
 
 type Example struct {
@@ -13,8 +15,14 @@ type Example struct {
 	ExpectedOutput string
 }
 
-func FindExamples(directory string) ([]Example, error) {
-	files, err := ioutil.ReadDir(directory)
+func FindExamples(dirOrProgram string, examplesDir string) ([]Example, error) {
+	dir, _, err := utils.SplitDirAndProgram(dirOrProgram)
+	if err != nil {
+		return nil, err
+	}
+
+	fullExamplesDir := path.Join(dir, examplesDir)
+	files, err := ioutil.ReadDir(fullExamplesDir)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +34,7 @@ func FindExamples(directory string) ([]Example, error) {
 		}
 
 		filename := f.Name()
-		bytes, err := os.ReadFile(path.Join(directory, filename))
+		bytes, err := os.ReadFile(path.Join(fullExamplesDir, filename))
 		if err != nil {
 			return nil, err
 		}

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/hashicorp/go-multierror"
 	bench "github.com/mniak/bench"
@@ -11,18 +10,16 @@ import (
 )
 
 var testExamplesCmd = &cobra.Command{
-	Use: "examples <program> [<arguments>]",
-	Aliases: []string{
-		"ex", "example",
-		"sample", "samples",
-	},
-	Args: cobra.ExactArgs(1),
+	Use:     "examples <program> [<arguments>]",
+	Aliases: []string{"ex"},
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		workingDir, err := cmd.Flags().GetString("dir")
+		examples, err := bench.FindExamples(args[0], "")
 		handle(err)
 
-		examples, err := bench.FindExamples(path.Join(workingDir, "examples"))
-		handle(err)
+		if len(examples) == 0 {
+			fmt.Fprintln(os.Stderr, "No examples found")
+		}
 
 		var testResults error
 		for _, ex := range examples {
@@ -32,8 +29,6 @@ var testExamplesCmd = &cobra.Command{
 				Program:        args[0],
 				Input:          ex.Input,
 				ExpectedOutput: ex.ExpectedOutput,
-				Args:           args[1:],
-				WorkingDir:     workingDir,
 			}
 			err = runTest(t, ex.Name)
 			if err != nil {
@@ -50,5 +45,4 @@ var testExamplesCmd = &cobra.Command{
 
 func init() {
 	testCmd.AddCommand(testExamplesCmd)
-	testExamplesCmd.MarkPersistentFlagRequired("dir")
 }

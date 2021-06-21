@@ -7,9 +7,8 @@ import (
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
-	Use:     "build <folder>",
-	Aliases: []string{"compile"},
-	Args:    cobra.ExactArgs(1),
+	Use:  "build <folder>",
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		handle(bench.Build(args[0]))
 	},
