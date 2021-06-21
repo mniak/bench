@@ -9,10 +9,7 @@ import (
 	"github.com/mniak/bench/lib/toolchain"
 )
 
-var (
-	ErrProgramNotFound = errors.New("program not found")
-	ErrNoToolchain     = errors.New("could not get the appropriate")
-)
+var ErrProgramNotFound = errors.New("program not found")
 
 func findMain(filenameOrFolder string) (string, error) {
 	info, err := os.Stat(filenameOrFolder)
@@ -49,15 +46,11 @@ func findMain(filenameOrFolder string) (string, error) {
 }
 
 func buildToolchain(mainfile string) (toolchain.Toolchain, error) {
-	// switch runtime.GOOS {
-	// case "windows":
 	switch path.Ext(mainfile) {
-	case ".cpp":
-		return toolchain.NewMSVC()
+	case ".cpp", ".c++":
+		return toolchain.NewCPP()
 	}
-	// break
-	// }
-	return nil, ErrNoToolchain
+	return nil, toolchain.ErrToolchainNotFound
 }
 
 func Build(path string) error {
@@ -73,6 +66,5 @@ func Build(path string) error {
 	if err != nil {
 		return err
 	}
-	// ran, err := tchain.Run(built)
 	return nil
 }

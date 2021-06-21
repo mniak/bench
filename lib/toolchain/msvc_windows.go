@@ -15,6 +15,12 @@ type MSVCToolchain struct {
 	envvars []string
 }
 
+func init() {
+	cppToolchainFactories = append(cppToolchainFactories, func() (Toolchain, error) {
+		return NewMSVC()
+	})
+}
+
 func findVc2017() (string, error) {
 	programfiles := os.Getenv("ProgramFiles(x86)")
 	if programfiles == "" {
