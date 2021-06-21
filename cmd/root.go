@@ -11,11 +11,8 @@ var rootCmd = &cobra.Command{
 	Use: "bench",
 }
 
-func Execute() {
+func main() {
 	cobra.CheckErr(rootCmd.Execute())
-}
-
-func init() {
 }
 
 func handle(err error) {

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/mniak/bench/lib/toolchain"
+	"github.com/mniak/bench/toolchain"
 )
 
 var ErrProgramNotFound = errors.New("program not found")

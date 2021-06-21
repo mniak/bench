@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	bench "github.com/mniak/bench/lib"
+	bench "github.com/mniak/bench"
 	"github.com/spf13/cobra"
 )
 
