@@ -29,9 +29,7 @@ func TestSplitProgramDir_WhenFolder(t *testing.T) {
 	tempDir := os.TempDir()
 	folder, err := os.MkdirTemp(tempDir, "test_*")
 	require.NoError(t, err, "create temp file")
-	defer func() {
-		os.Remove(folder)
-	}()
+	defer os.Remove(folder)
 
 	dir, program, err := SplitDirAndProgram(folder)
 	require.NoError(t, err, "split file and dir")
