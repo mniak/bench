@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	bench "github.com/mniak/bench"
 	"github.com/spf13/cobra"
 )
@@ -10,8 +12,9 @@ var runCmd = &cobra.Command{
 	Use:  "build <folder>",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		_, err := bench.Build(args[0])
+		builtPath, err := bench.Build(args[0])
 		handle(err)
+		fmt.Println(builtPath)
 	},
 }
 
