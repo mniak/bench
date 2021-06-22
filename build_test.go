@@ -5,7 +5,8 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
-	"github.com/mniak/bench/mock_bench"
+	"github.com/mniak/bench/internal/mock_bench"
+	"github.com/mniak/bench/internal/mock_toolchain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,10 +24,15 @@ func TestBuilderBuild(t *testing.T) {
 		Find(fakepath).
 		Return(fakesource, nil)
 
+	tchain := mock_toolchain.NewMockToolchain(ctrl)
+	tchain.EXPECT().
+		Build(fakesource).
+		Return(fakebuilt, nil)
+
 	toolchainProducer := mock_bench.NewMockToolchainProducer(ctrl)
 	toolchainProducer.EXPECT().
-		Produce(fakepath).
-		Return(fakebuilt, nil)
+		Produce(fakesource).
+		Return(tchain, nil)
 
 	builder := Builder{
 		programFinder:     programFinder,

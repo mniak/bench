@@ -1,5 +1,3 @@
-//go:generate mockgen -destination=mock_bench/build_test.go . ProgramFinder,ToolchainProducer
-
 package bench
 
 import (
