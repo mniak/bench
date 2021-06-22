@@ -1,15 +1,20 @@
 package bench
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
+	"runtime"
 )
 
 type ProgramFinder interface {
 	Find(string) (string, error)
 }
-type _ProgramFinder struct{}
+
+type _ProgramFinder struct {
+	extensions []string
+	filenames  []string
+}
 
 func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 	info, err := os.Stat(filenameOrFolder)
@@ -23,28 +28,48 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 		return filenameOrFolder, nil
 	}
 
-	ignoredExtensions := []string{
-		".exe", ".dll", ".obj",
-		".o", ".so",
-	}
-	files, err := ioutil.ReadDir(filenameOrFolder)
-	if err != nil {
-		return "", err
-	}
-	for _, fi := range files {
-		if fi.IsDir() {
-			continue
-		}
-		filename := fi.Name()
-		for _, iext := range ignoredExtensions {
-			if iext == path.Ext(filename) {
-				continue
+	// files, err := ioutil.ReadDir(filenameOrFolder)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// for _, fi := range files {
+	// 	if fi.IsDir() {
+	// 		continue
+	// 	}
+	// 	filename := fi.Name()
+	// 	for _, iext := range pf.extensions {
+	// 		if iext == path.Ext(filename) {
+	// 			continue
+	// 		}
+	// 	}
+	// 	return path.Join(filenameOrFolder, fi.Name()), nil
+	// }
+
+	folderBaseName := filepath.Base(filenameOrFolder)
+	filenames := append(pf.filenames, folderBaseName)
+
+	for _, filename := range filenames {
+		for _, extension := range pf.extensions {
+			full := path.Join(filenameOrFolder, filename+extension)
+			_, err := os.Stat(full)
+			if err == nil {
+				return full, nil
 			}
 		}
-		return path.Join(filenameOrFolder, fi.Name()), nil
 	}
 
 	return "", ErrProgramNotFound
 }
 
-var DefaultProgramFinder ProgramFinder = new(_ProgramFinder)
+var DefaultProgramFinder *_ProgramFinder = &_ProgramFinder{
+	filenames: []string{"main"},
+}
+
+func init() {
+	switch runtime.GOOS {
+	case "windows":
+		DefaultProgramFinder.extensions = append(DefaultProgramFinder.extensions, ".exe")
+	default:
+		DefaultProgramFinder.extensions = append(DefaultProgramFinder.extensions, "")
+	}
+}
