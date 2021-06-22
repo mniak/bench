@@ -34,7 +34,7 @@ func TestBuilderBuild(t *testing.T) {
 		Produce(fakesource).
 		Return(tchain, nil)
 
-	builder := Builder{
+	builder := _Builder{
 		programFinder:     programFinder,
 		toolchainProducer: toolchainProducer,
 	}
@@ -42,4 +42,23 @@ func TestBuilderBuild(t *testing.T) {
 	builtPath, err := builder.Build(fakepath)
 	require.NoError(t, err, "build")
 	assert.Equal(t, fakebuilt, builtPath, "built path")
+}
+
+func TestBuild(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	fakepath := gofakeit.Sentence(5)
+	fakebuilt := gofakeit.Sentence(5)
+
+	builder := mock_bench.NewMockBuilder(ctrl)
+	builder.EXPECT().
+		Build(fakepath).
+		Return(fakebuilt, nil)
+
+	DefaultBuilder = builder
+	result, err := Build(fakepath)
+
+	assert.NoError(t, err)
+	assert.Equal(t, fakebuilt, result)
 }

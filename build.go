@@ -9,9 +9,40 @@ import (
 	"github.com/mniak/bench/toolchain"
 )
 
+type (
+	ProgramFinder interface {
+		Find(string) (string, error)
+	}
+	ToolchainProducer interface {
+		Produce(string) (toolchain.Toolchain, error)
+	}
+	Builder interface {
+		Build(string) (string, error)
+	}
+)
+
+type _Builder struct {
+	programFinder     ProgramFinder
+	toolchainProducer ToolchainProducer
+}
+
+func (b *_Builder) Build(path string) (string, error) {
+	mainfile, err := b.programFinder.Find(path)
+	if err != nil {
+		return "", err
+	}
+	tchain, err := b.toolchainProducer.Produce(mainfile)
+	if err != nil {
+		return "", err
+	}
+	return tchain.Build(mainfile)
+}
+
+type _ProgramFinder struct{}
+
 var ErrProgramNotFound = errors.New("program not found")
 
-func findMain(filenameOrFolder string) (string, error) {
+func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 	info, err := os.Stat(filenameOrFolder)
 	if os.IsNotExist(err) {
 		return "", ErrProgramNotFound
@@ -45,7 +76,9 @@ func findMain(filenameOrFolder string) (string, error) {
 	return "", ErrProgramNotFound
 }
 
-func buildToolchain(mainfile string) (toolchain.Toolchain, error) {
+type _ToolchainProducer struct{}
+
+func (tp *_ToolchainProducer) Produce(mainfile string) (toolchain.Toolchain, error) {
 	switch path.Ext(mainfile) {
 	case ".cpp", ".c++":
 		return toolchain.NewCPP()
@@ -53,33 +86,10 @@ func buildToolchain(mainfile string) (toolchain.Toolchain, error) {
 	return nil, toolchain.ErrToolchainNotFound
 }
 
-type (
-	ProgramFinder interface {
-		Find(string) (string, error)
-	}
-	ToolchainProducer interface {
-		Produce(string) (toolchain.Toolchain, error)
-	}
-)
-
-type Builder struct {
-	programFinder     ProgramFinder
-	toolchainProducer ToolchainProducer
+var DefaultBuilder Builder = &_Builder{
+	toolchainProducer: new(_ToolchainProducer),
+	programFinder:     new(_ProgramFinder),
 }
-
-func (b *Builder) Build(path string) (string, error) {
-	mainfile, err := b.programFinder.Find(path)
-	if err != nil {
-		return "", err
-	}
-	tchain, err := b.toolchainProducer.Produce(mainfile)
-	if err != nil {
-		return "", err
-	}
-	return tchain.Build(mainfile)
-}
-
-var DefaultBuilder Builder = Builder{}
 
 func Build(path string) (string, error) {
 	return DefaultBuilder.Build(path)
