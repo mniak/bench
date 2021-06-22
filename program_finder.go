@@ -27,23 +27,6 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 		return filenameOrFolder, nil
 	}
 
-	// files, err := ioutil.ReadDir(filenameOrFolder)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// for _, fi := range files {
-	// 	if fi.IsDir() {
-	// 		continue
-	// 	}
-	// 	filename := fi.Name()
-	// 	for _, iext := range pf.extensions {
-	// 		if iext == filepath.Ext(filename) {
-	// 			continue
-	// 		}
-	// 	}
-	// 	return filepath.Join(filenameOrFolder, fi.Name()), nil
-	// }
-
 	folderBaseName := filepath.Base(filenameOrFolder)
 	filenames := append(pf.filenames, folderBaseName)
 
@@ -74,5 +57,6 @@ func init() {
 		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".ps1")
 	default:
 		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, "")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".sh")
 	}
 }
