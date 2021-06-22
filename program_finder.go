@@ -44,7 +44,8 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 }
 
 var defaultProgramFinder *_ProgramFinder = &_ProgramFinder{
-	filenames: []string{"main"},
+	filenames:  []string{"main"},
+	extensions: []string{".py"},
 }
 var DefaultProgramFinder ProgramFinder = defaultProgramFinder
 

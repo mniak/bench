@@ -74,6 +74,8 @@ func TestProgramFinder_WhenFolder_ShouldFindFolderNameWithExtension(t *testing.T
 func TestDefaultProgramFinder_ShouldHaveExtensionsAndFilenames(t *testing.T) {
 	assert.Contains(t, defaultProgramFinder.filenames, "main")
 
+	assert.Contains(t, defaultProgramFinder.extensions, ".py")
+
 	if runtime.GOOS == "windows" {
 		t.Run("windows", func(t *testing.T) {
 			assert.Contains(t, defaultProgramFinder.extensions, ".exe")
