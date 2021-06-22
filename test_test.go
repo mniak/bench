@@ -12,7 +12,6 @@ func TestTest(t *testing.T) {
 	sentence := gofakeit.Sentence(5)
 
 	test := NewTest("cat", sentence, sentence)
-	// test.Args = []string{sentence}
 
 	err := test.Start()
 	require.NoError(t, err, "start")
