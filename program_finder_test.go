@@ -75,11 +75,25 @@ func TestDefaultProgramFinder_ShouldHaveExtensionsAndFilenames(t *testing.T) {
 	assert.Contains(t, defaultProgramFinder.filenames, "main")
 
 	if runtime.GOOS == "windows" {
-		assert.Contains(t, defaultProgramFinder.extensions, ".exe", "windows exe")
-		assert.NotContains(t, defaultProgramFinder.extensions, "", "windows without extension")
+		t.Run("windows", func(t *testing.T) {
+			assert.Contains(t, defaultProgramFinder.extensions, ".exe")
+			assert.Contains(t, defaultProgramFinder.extensions, ".bat")
+			assert.Contains(t, defaultProgramFinder.extensions, ".cmd")
+			assert.Contains(t, defaultProgramFinder.extensions, ".ps1")
+
+			assert.NotContains(t, defaultProgramFinder.extensions, "", "(none)")
+			assert.NotContains(t, defaultProgramFinder.extensions, ".sh")
+		})
 	} else {
-		assert.NotContains(t, defaultProgramFinder.extensions, ".exe", "non-windows exe")
-		assert.Contains(t, defaultProgramFinder.extensions, "", "non-windows without extension")
+		t.Run("non-windows", func(t *testing.T) {
+			assert.NotContains(t, defaultProgramFinder.extensions, ".exe")
+			assert.NotContains(t, defaultProgramFinder.extensions, ".bat")
+			assert.NotContains(t, defaultProgramFinder.extensions, ".cmd")
+			assert.NotContains(t, defaultProgramFinder.extensions, ".ps1")
+
+			assert.Contains(t, defaultProgramFinder.extensions, "", "(none)")
+			assert.Contains(t, defaultProgramFinder.extensions, ".sh")
+		})
 	}
 }
 

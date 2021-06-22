@@ -69,6 +69,9 @@ func init() {
 	switch runtime.GOOS {
 	case "windows":
 		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".exe")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".bat")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".cmd")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".ps1")
 	default:
 		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, "")
 	}
