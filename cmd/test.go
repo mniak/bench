@@ -28,11 +28,7 @@ var testCmd = &cobra.Command{
 			fmt.Println("Test running...")
 		}
 
-		t := bench.Test{
-			Program:        args[0],
-			Input:          input,
-			ExpectedOutput: expectedOutput,
-		}
+		t := bench.NewTest(args[0], input, expectedOutput)
 		handle(runTest(t, testName))
 	},
 }

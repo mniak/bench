@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,15 +14,13 @@ func TestSplitProgramDir_WhenFile(t *testing.T) {
 	tempDir := os.TempDir()
 	file, err := os.CreateTemp(tempDir, "test_*")
 	require.NoError(t, err, "create temp file")
-	defer func() {
-		file.Close()
-		os.Remove(file.Name())
-	}()
+	defer os.Remove(file.Name())
+	defer file.Close()
 
 	dir, program, err := SplitDirAndProgram(file.Name())
 	require.NoError(t, err, "split file and dir")
 
-	assert.Equal(t, tempDir, dir)
+	assert.Equal(t, strings.TrimSuffix(tempDir, "/"), strings.TrimSuffix(dir, "/"))
 	assert.Equal(t, filepath.Base(file.Name()), program)
 }
 

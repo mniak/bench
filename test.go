@@ -11,10 +11,13 @@ import (
 )
 
 type Test struct {
-	Program string
+	programFinder ProgramFinder
+
+	program string
 
 	Input          string
 	ExpectedOutput string
+	Args           []string
 
 	stdin  *bytes.Buffer
 	stdout *bytes.Buffer
@@ -22,9 +25,19 @@ type Test struct {
 	cmd    *exec.Cmd
 }
 
-type TestResult struct {
-	Output      string
-	ErrorOutput string
+func NewTest(program, input, expectedOutput string) Test {
+	return Test{
+		program:        program,
+		Input:          input,
+		ExpectedOutput: expectedOutput,
+		Args:           make([]string, 0),
+
+		programFinder: DefaultProgramFinder,
+	}
+}
+
+func (t *Test) WithProgramFinder(programFinder ProgramFinder) {
+	t.programFinder = programFinder
 }
 
 func (t *Test) Start() error {
@@ -32,12 +45,17 @@ func (t *Test) Start() error {
 	t.stdout = new(bytes.Buffer)
 	t.stderr = new(bytes.Buffer)
 
-	t.cmd = exec.Command(t.Program)
+	program, err := t.programFinder.Find(t.program)
+	if err != nil {
+		return err
+	}
+
+	t.cmd = exec.Command(program)
 	t.cmd.Stdin = t.stdin
 	t.cmd.Stdout = t.stdout
 	t.cmd.Stderr = t.stderr
 
-	err := t.cmd.Start()
+	err = t.cmd.Start()
 	if err != nil {
 		return errors.Wrap(err, "program start failed")
 	}
@@ -62,4 +80,13 @@ func (t *Test) Wait() (TestResult, error) {
 		)
 	}
 	return result, nil
+}
+
+func (t *Test) Program() string {
+	return t.program
+}
+
+type TestResult struct {
+	Output      string
+	ErrorOutput string
 }

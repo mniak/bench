@@ -1,46 +1,63 @@
 package bench
 
 import (
-	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
+	"runtime"
 )
 
 type ProgramFinder interface {
 	Find(string) (string, error)
 }
-type _ProgramFinder struct{}
+
+type _ProgramFinder struct {
+	extensions []string
+	filenames  []string
+}
 
 func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 	info, err := os.Stat(filenameOrFolder)
 	if os.IsNotExist(err) {
-		return "", ErrProgramNotFound
+		return filenameOrFolder, nil
 	}
-
+	if err != nil {
+		return "", err
+	}
 	if !info.IsDir() {
 		return filenameOrFolder, nil
 	}
 
-	ignoredExtensions := []string{
-		".exe", ".dll", ".obj",
-		".o", ".so",
-	}
-	files, err := ioutil.ReadDir(filenameOrFolder)
-	if err != nil {
-		return "", err
-	}
-	for _, fi := range files {
-		if fi.IsDir() {
-			continue
-		}
-		filename := fi.Name()
-		for _, iext := range ignoredExtensions {
-			if iext == path.Ext(filename) {
-				continue
+	folderBaseName := filepath.Base(filenameOrFolder)
+	filenames := append(pf.filenames, folderBaseName)
+
+	for _, filename := range filenames {
+		for _, extension := range pf.extensions {
+			full := filepath.Join(filenameOrFolder, filename+extension)
+			_, err := os.Stat(full)
+			if err == nil {
+				return full, nil
 			}
 		}
-		return path.Join(filenameOrFolder, fi.Name()), nil
 	}
 
 	return "", ErrProgramNotFound
+}
+
+var defaultProgramFinder *_ProgramFinder = &_ProgramFinder{
+	filenames:  []string{"main"},
+	extensions: []string{".py"},
+}
+var DefaultProgramFinder ProgramFinder = defaultProgramFinder
+
+func init() {
+	switch runtime.GOOS {
+	case "windows":
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".exe")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".bat")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".cmd")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".ps1")
+	default:
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, "")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".sh")
+	}
 }
