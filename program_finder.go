@@ -14,9 +14,11 @@ type _ProgramFinder struct{}
 func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 	info, err := os.Stat(filenameOrFolder)
 	if os.IsNotExist(err) {
-		return "", ErrProgramNotFound
+		return filenameOrFolder, nil
 	}
-
+	if err != nil {
+		return "", err
+	}
 	if !info.IsDir() {
 		return filenameOrFolder, nil
 	}
@@ -44,3 +46,5 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 
 	return "", ErrProgramNotFound
 }
+
+var DefaultProgramFinder ProgramFinder = new(_ProgramFinder)

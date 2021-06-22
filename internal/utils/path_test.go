@@ -13,10 +13,8 @@ func TestSplitProgramDir_WhenFile(t *testing.T) {
 	tempDir := os.TempDir()
 	file, err := os.CreateTemp(tempDir, "test_*")
 	require.NoError(t, err, "create temp file")
-	defer func() {
-		file.Close()
-		os.Remove(file.Name())
-	}()
+	defer os.Remove(file.Name())
+	defer file.Close()
 
 	dir, program, err := SplitDirAndProgram(file.Name())
 	require.NoError(t, err, "split file and dir")

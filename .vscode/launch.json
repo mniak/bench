@@ -6,7 +6,33 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}/cmd"
+        },
+        {
+            "name": "Test my program",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd",
+            "cwd": "C:\\Users\\andre\\Desktop\\exercises",
+            "args": [
+                "test",
+                ".\\hackerrank\\challenges\\new-year-chaos\\main.exe",
+                "-i", "aaaaaaaaa",
+                "-o", "bbbbbbbbb",
+            ]
+        },
+        {
+            "name": "Test my program w/ examples",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd",
+            "cwd": "C:\\Users\\andre\\Desktop\\exercises",
+            "args": [
+                "test","examples",
+                ".\\hackerrank\\challenges\\new-year-chaos\\",
+            ]
         }
     ]
 }
