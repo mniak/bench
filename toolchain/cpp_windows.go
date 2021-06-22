@@ -8,6 +8,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/mniak/bench/internal/utils"
 )
 
 type MSVCToolchain struct {
@@ -165,8 +167,10 @@ func findExe(exe string, paths []string) (string, error) {
 }
 
 func (tc *MSVCToolchain) Build(mainFullPath string) (string, error) {
-	workingDir := path.Dir(mainFullPath)
-	main := path.Base(mainFullPath)
+	workingDir, main, err := utils.SplitDirAndProgram(mainFullPath)
+	if err != nil {
+		return "", err
+	}
 	binary := strings.TrimSuffix(main, filepath.Ext(main)) + ".exe"
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+binary)
@@ -174,7 +178,7 @@ func (tc *MSVCToolchain) Build(mainFullPath string) (string, error) {
 	cmd.Stdout = os.Stdout
 	cmd.Dir = workingDir
 	cmd.Env = append(cmd.Env, tc.envvars...)
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return "", err
 	}

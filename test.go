@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/andreyvit/diff"
@@ -13,9 +11,7 @@ import (
 )
 
 type Test struct {
-	Program    string
-	Args       []string
-	WorkingDir string
+	Program string
 
 	Input          string
 	ExpectedOutput string
@@ -36,17 +32,7 @@ func (t *Test) Start() error {
 	t.stdout = new(bytes.Buffer)
 	t.stderr = new(bytes.Buffer)
 
-	program := t.Program
-	if !path.IsAbs(t.Program) {
-		var err error
-		program, err = filepath.Abs(path.Join(t.WorkingDir, t.Program))
-		if err != nil {
-			return err
-		}
-	}
-
-	t.cmd = exec.Command(program, t.Args...)
-	t.cmd.Dir = t.WorkingDir
+	t.cmd = exec.Command(t.Program)
 	t.cmd.Stdin = t.stdin
 	t.cmd.Stdout = t.stdout
 	t.cmd.Stderr = t.stderr
