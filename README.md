@@ -1,0 +1,1 @@
+[![Build and Test](https://github.com/mniak/bench/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/mniak/bench/actions/workflows/build-and-test.yml) [![codecov](https://codecov.io/gh/mniak/bench/branch/master/graph/badge.svg?token=wB85l5nBIz)](https://codecov.io/gh/mniak/bench)
