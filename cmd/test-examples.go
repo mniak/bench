@@ -14,7 +14,7 @@ var testExamplesCmd = &cobra.Command{
 	Aliases: []string{"ex"},
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		examples, err := bench.FindExamples(args[0], "")
+		examples, err := bench.FindExamples(args[0], "examples")
 		handle(err)
 
 		if len(examples) == 0 {
