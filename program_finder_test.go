@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
@@ -68,4 +69,20 @@ func TestProgramFinder_WhenFolder_ShouldFindFolderNameWithExtension(t *testing.T
 
 	fullPath := filepath.Join(tempSubFolder, tempBaseName)
 	assert.Equal(t, fullPath, result)
+}
+
+func TestDefaultProgramFinder_ShouldHaveExtensionsAndFilenames(t *testing.T) {
+	assert.Contains(t, defaultProgramFinder.filenames, "main")
+
+	if runtime.GOOS == "windows" {
+		assert.Contains(t, defaultProgramFinder.extensions, ".exe", "windows exe")
+		assert.NotContains(t, defaultProgramFinder.extensions, "", "windows without extension")
+	} else {
+		assert.NotContains(t, defaultProgramFinder.extensions, ".exe", "non-windows exe")
+		assert.Contains(t, defaultProgramFinder.extensions, "", "non-windows without extension")
+	}
+}
+
+func TestDefaultProgramFinder_UppercaseDefault_ShouldBeTheSameAsLowercaseDefault(t *testing.T) {
+	assert.Same(t, defaultProgramFinder, defaultProgramFinder)
 }

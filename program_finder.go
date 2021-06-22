@@ -60,15 +60,16 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 	return "", ErrProgramNotFound
 }
 
-var DefaultProgramFinder *_ProgramFinder = &_ProgramFinder{
+var defaultProgramFinder *_ProgramFinder = &_ProgramFinder{
 	filenames: []string{"main"},
 }
+var DefaultProgramFinder ProgramFinder = defaultProgramFinder
 
 func init() {
 	switch runtime.GOOS {
 	case "windows":
-		DefaultProgramFinder.extensions = append(DefaultProgramFinder.extensions, ".exe")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, ".exe")
 	default:
-		DefaultProgramFinder.extensions = append(DefaultProgramFinder.extensions, "")
+		defaultProgramFinder.extensions = append(defaultProgramFinder.extensions, "")
 	}
 }
