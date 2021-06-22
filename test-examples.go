@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/mniak/bench/internal/utils"
@@ -21,7 +22,7 @@ func FindExamples(dirOrProgram string, examplesDir string) ([]Example, error) {
 		return nil, err
 	}
 
-	fullExamplesDir := path.Join(dir, examplesDir)
+	fullExamplesDir := filepath.Join(dir, examplesDir)
 	files, err := ioutil.ReadDir(fullExamplesDir)
 	if err != nil {
 		return nil, err

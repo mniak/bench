@@ -45,7 +45,7 @@ func findVc2017() (string, error) {
 		return "", err
 	}
 
-	path := path.Join(strings.TrimSpace(pathBuffer.String()), "VC", "Auxiliary", "Build")
+	path := filepath.Join(strings.TrimSpace(pathBuffer.String()), "VC", "Auxiliary", "Build")
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) || !info.IsDir() {
 		return "", ErrToolchainNotFound
@@ -68,7 +68,7 @@ func findVcVarsBat() (string, error) {
 		return "", err
 	}
 
-	location := path.Join(vc, "vcvars64.bat")
+	location := filepath.Join(vc, "vcvars64.bat")
 	info, err := os.Stat(location)
 	if os.IsNotExist(err) || info.IsDir() {
 		return "", ErrToolchainNotFound
@@ -149,7 +149,7 @@ func findExe(exe string, paths []string) (string, error) {
 		if err != nil {
 			continue
 		}
-		filename := path.Join(abs, exe)
+		filename := filepath.Join(abs, exe)
 
 		info, err := os.Stat(filename)
 		if os.IsNotExist(err) {
@@ -182,5 +182,5 @@ func (tc *MSVCToolchain) Build(mainFullPath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return path.Join(workingDir, binary), nil
+	return filepath.Join(workingDir, binary), nil
 }

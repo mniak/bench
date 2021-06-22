@@ -2,7 +2,6 @@ package bench
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 )
@@ -38,11 +37,11 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 	// 	}
 	// 	filename := fi.Name()
 	// 	for _, iext := range pf.extensions {
-	// 		if iext == path.Ext(filename) {
+	// 		if iext == filepath.Ext(filename) {
 	// 			continue
 	// 		}
 	// 	}
-	// 	return path.Join(filenameOrFolder, fi.Name()), nil
+	// 	return filepath.Join(filenameOrFolder, fi.Name()), nil
 	// }
 
 	folderBaseName := filepath.Base(filenameOrFolder)
@@ -50,7 +49,7 @@ func (pf *_ProgramFinder) Find(filenameOrFolder string) (string, error) {
 
 	for _, filename := range filenames {
 		for _, extension := range pf.extensions {
-			full := path.Join(filenameOrFolder, filename+extension)
+			full := filepath.Join(filenameOrFolder, filename+extension)
 			_, err := os.Stat(full)
 			if err == nil {
 				return full, nil

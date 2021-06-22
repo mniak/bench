@@ -1,7 +1,7 @@
 package bench
 
 import (
-	"path"
+	"path/filepath"
 
 	"github.com/mniak/bench/toolchain"
 )
@@ -13,7 +13,7 @@ type ToolchainProducer interface {
 type _ToolchainProducer struct{}
 
 func (tp *_ToolchainProducer) Produce(mainfile string) (toolchain.Toolchain, error) {
-	switch path.Ext(mainfile) {
+	switch filepath.Ext(mainfile) {
 	case ".cpp", ".c++":
 		return toolchain.NewCPP()
 	}

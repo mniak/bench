@@ -41,7 +41,7 @@ func TestProgramFinder_WhenFolder_ShouldFindFilenameWithExtension(t *testing.T) 
 	result, err := finder.Find(tempSubFolder)
 	assert.NoError(t, err)
 
-	fullPath := path.Join(tempSubFolder, tempBaseName)
+	fullPath := filepath.Join(tempSubFolder, tempBaseName)
 	assert.Equal(t, fullPath, result)
 }
 
@@ -66,6 +66,6 @@ func TestProgramFinder_WhenFolder_ShouldFindFolderNameWithExtension(t *testing.T
 	result, err := finder.Find(tempSubFolder)
 	assert.NoError(t, err)
 
-	fullPath := path.Join(tempSubFolder, tempBaseName)
+	fullPath := filepath.Join(tempSubFolder, tempBaseName)
 	assert.Equal(t, fullPath, result)
 }
