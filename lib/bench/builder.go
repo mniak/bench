@@ -36,7 +36,7 @@ func (b *_BuilderWithProgramFinder) Build(path string) (string, error) {
 	return b.Builder.Build(fullpath)
 }
 
-func NewBuilderWithProgramFinder(builder Builder, sourceFinder FileFinder) Builder {
+func WrapWithProgramFinder(builder Builder, sourceFinder FileFinder) Builder {
 	return &_BuilderWithProgramFinder{
 		Builder:       builder,
 		programFinder: sourceFinder,

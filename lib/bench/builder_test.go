@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBuilderBuild(t *testing.T) {
+func TestBuilder_Build(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -53,4 +53,32 @@ func TestBuild(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, fakebuilt, result)
+}
+
+func TestBuilderWithProgramFinder_Build(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	fakepath := gofakeit.Sentence(5)
+	fakefullpath := gofakeit.Sentence(5)
+	fakebuilt := gofakeit.Sentence(5)
+
+	programFinder := mocks.NewMockFileFinder(ctrl)
+	programFinder.EXPECT().
+		Find(fakepath).
+		Return(fakefullpath, nil)
+
+	innerBuilder := mocks.NewMockBuilder(ctrl)
+	innerBuilder.EXPECT().
+		Build(fakefullpath).
+		Return(fakebuilt, nil)
+
+	builder := WrapWithProgramFinder(
+		innerBuilder,
+		programFinder,
+	)
+
+	builtPath, err := builder.Build(fakepath)
+	require.NoError(t, err, "build")
+	assert.Equal(t, fakebuilt, builtPath, "built path")
 }
