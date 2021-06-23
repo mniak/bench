@@ -3,7 +3,7 @@ package bench
 import (
 	"path/filepath"
 
-	"github.com/mniak/bench/toolchain"
+	"github.com/mniak/bench/lib/toolchain"
 )
 
 type ToolchainProducer interface {

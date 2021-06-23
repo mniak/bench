@@ -1,11 +1,11 @@
-package main
+package cmd
 
 import (
 	"fmt"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
-	bench "github.com/mniak/bench"
+	"github.com/mniak/bench/lib/bench"
 	"github.com/spf13/cobra"
 )
 

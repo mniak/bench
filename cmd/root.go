@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ var rootCmd = &cobra.Command{
 	Use: "bench",
 }
 
-func main() {
+func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
