@@ -1,9 +1,9 @@
-package main
+package cmd
 
 import (
 	"fmt"
 
-	bench "github.com/mniak/bench"
+	"github.com/mniak/bench/lib/bench"
 	"github.com/spf13/cobra"
 )
 

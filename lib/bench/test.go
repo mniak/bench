@@ -50,6 +50,10 @@ func (t *Test) Start() error {
 		return err
 	}
 
+	_, err = t.stdin.WriteString(t.Input)
+	if err != nil {
+		return err
+	}
 	t.cmd = exec.Command(program)
 	t.cmd.Stdin = t.stdin
 	t.cmd.Stdout = t.stdout
@@ -65,7 +69,6 @@ func (t *Test) Start() error {
 func (t *Test) Wait() (TestResult, error) {
 	var result TestResult
 
-	t.stdin.WriteString(t.Input)
 	err := t.cmd.Wait()
 	if err != nil {
 		return result, errors.Wrap(err, "program wait failed")
@@ -74,9 +77,9 @@ func (t *Test) Wait() (TestResult, error) {
 	result.Output = t.stdout.String()
 	result.ErrorOutput = t.stderr.String()
 
-	if strings.Compare(result.Output, t.ExpectedOutput) != 0 {
+	if strings.Compare(t.ExpectedOutput, result.Output) != 0 {
 		return result, fmt.Errorf("output expectation not satisfied\n%s",
-			diff.LineDiff(t.ExpectedOutput, t.stdout.String()),
+			diff.LineDiff(t.ExpectedOutput, result.Output),
 		)
 	}
 	return result, nil
