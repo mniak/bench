@@ -1,31 +1,26 @@
 package bench
 
 type Builder interface {
-	Build(string) (string, error)
+	Build(fullpath string) (string, error)
 }
 
 type _Builder struct {
-	programFinder     ProgramFinder
 	toolchainProducer ToolchainProducer
 }
 
-func (b *_Builder) Build(path string) (string, error) {
-	mainfile, err := b.programFinder.Find(path)
+func (b *_Builder) Build(fullpath string) (string, error) {
+	// mainfile, err := b.fileFinder.Find(fullpath)
+	// if err != nil {
+	// 	return "", err
+	// }
+	tchain, err := b.toolchainProducer.Produce(fullpath)
 	if err != nil {
 		return "", err
 	}
-	tchain, err := b.toolchainProducer.Produce(mainfile)
-	if err != nil {
-		return "", err
-	}
-	return tchain.Build(mainfile)
+	return tchain.Build(fullpath)
 }
 
-var DefaultBuilder Builder = &_Builder{
-	toolchainProducer: new(_ToolchainProducer),
-	programFinder:     new(_ProgramFinder),
-}
-
-func Build(path string) (string, error) {
-	return DefaultBuilder.Build(path)
+type _BuilderWithFileFinder struct {
+	Builder
+	fileFinder FileFinder
 }

@@ -16,12 +16,12 @@ type Tester interface {
 }
 
 type _Tester struct {
-	programFinder ProgramFinder
+	fileFinder FileFinder
 }
 
-func NewTester(programFinder ProgramFinder) Tester {
+func NewTester(fileFinder FileFinder) Tester {
 	return &_Tester{
-		programFinder: programFinder,
+		fileFinder: fileFinder,
 	}
 }
 
@@ -45,18 +45,18 @@ type (
 	}
 )
 
-func (tester *_Tester) Start(t Test) (started StartedTest, err error) {
+func (t *_Tester) Start(test Test) (started StartedTest, err error) {
 	started.stdin = new(bytes.Buffer)
 	started.stdout = new(bytes.Buffer)
 	started.stderr = new(bytes.Buffer)
-	started.expectedOutput = t.ExpectedOutput
+	started.expectedOutput = test.ExpectedOutput
 
-	program, err := tester.programFinder.Find(t.Program)
+	program, err := t.fileFinder.Find(test.Program)
 	if err != nil {
 		return
 	}
 
-	_, err = started.stdin.WriteString(t.Input)
+	_, err = started.stdin.WriteString(test.Input)
 	if err != nil {
 		return
 	}
@@ -89,14 +89,4 @@ func (t *_Tester) Wait(started StartedTest) (result TestResult, err error) {
 		return
 	}
 	return
-}
-
-var DefaultTester Tester = NewTester(defaultProgramFinder)
-
-func StartTest(t Test) (started StartedTest, err error) {
-	return DefaultTester.Start(t)
-}
-
-func WaitTest(started StartedTest) (result TestResult, err error) {
-	return DefaultTester.Wait(started)
 }

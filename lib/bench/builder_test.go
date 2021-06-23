@@ -15,26 +15,19 @@ func TestBuilderBuild(t *testing.T) {
 	defer ctrl.Finish()
 
 	fakepath := gofakeit.Sentence(5)
-	fakesource := gofakeit.Sentence(5)
 	fakebuilt := gofakeit.Sentence(5)
-
-	programFinder := mocks.NewMockProgramFinder(ctrl)
-	programFinder.EXPECT().
-		Find(fakepath).
-		Return(fakesource, nil)
 
 	tchain := mocks.NewMockToolchain(ctrl)
 	tchain.EXPECT().
-		Build(fakesource).
+		Build(fakepath).
 		Return(fakebuilt, nil)
 
 	toolchainProducer := mocks.NewMockToolchainProducer(ctrl)
 	toolchainProducer.EXPECT().
-		Produce(fakesource).
+		Produce(fakepath).
 		Return(tchain, nil)
 
 	builder := _Builder{
-		programFinder:     programFinder,
 		toolchainProducer: toolchainProducer,
 	}
 
