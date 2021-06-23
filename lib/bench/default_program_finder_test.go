@@ -8,30 +8,27 @@ import (
 )
 
 func TestShouldHaveExtensionsAndFilenames(t *testing.T) {
-	assert.Contains(t, defaultProgramFinder.filenames, "main")
+	programFinder := DefaultProgramFinder.(*_FileFinder)
 
-	assert.Contains(t, defaultProgramFinder.extensions, ".py")
+	assert.Contains(t, programFinder.filenames, "main")
+	assert.Contains(t, programFinder.extensions, ".py")
 
 	switch runtime.GOOS {
 	case "windows":
-		assert.Contains(t, defaultProgramFinder.extensions, ".exe")
-		assert.Contains(t, defaultProgramFinder.extensions, ".bat")
-		assert.Contains(t, defaultProgramFinder.extensions, ".cmd")
-		assert.Contains(t, defaultProgramFinder.extensions, ".ps1")
+		assert.Contains(t, programFinder.extensions, ".exe")
+		assert.Contains(t, programFinder.extensions, ".bat")
+		assert.Contains(t, programFinder.extensions, ".cmd")
+		assert.Contains(t, programFinder.extensions, ".ps1")
 
-		assert.NotContains(t, defaultProgramFinder.extensions, "", "(none)")
-		assert.NotContains(t, defaultProgramFinder.extensions, ".sh")
+		assert.NotContains(t, programFinder.extensions, "", "(none)")
+		assert.NotContains(t, programFinder.extensions, ".sh")
 	default:
-		assert.NotContains(t, defaultProgramFinder.extensions, ".exe")
-		assert.NotContains(t, defaultProgramFinder.extensions, ".bat")
-		assert.NotContains(t, defaultProgramFinder.extensions, ".cmd")
-		assert.NotContains(t, defaultProgramFinder.extensions, ".ps1")
+		assert.NotContains(t, programFinder.extensions, ".exe")
+		assert.NotContains(t, programFinder.extensions, ".bat")
+		assert.NotContains(t, programFinder.extensions, ".cmd")
+		assert.NotContains(t, programFinder.extensions, ".ps1")
 
-		assert.Contains(t, defaultProgramFinder.extensions, "", "(none)")
-		assert.Contains(t, defaultProgramFinder.extensions, ".sh")
+		assert.Contains(t, programFinder.extensions, "", "(none)")
+		assert.Contains(t, programFinder.extensions, ".sh")
 	}
-}
-
-func TestUppercaseDefault_ShouldBeTheSameAsLowercaseDefault(t *testing.T) {
-	assert.Same(t, defaultProgramFinder, defaultProgramFinder)
 }
