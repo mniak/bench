@@ -117,16 +117,11 @@ func NewMSVC() (*MSVCToolchain, error) {
 	}
 	var paths []string
 	for _, v := range result.envvars {
-		if len(v) < len(pathEnvVarPrefix) {
-			continue
-		}
-		prefix := v[:len(pathEnvVarPrefix)]
-		if strings.EqualFold(prefix, pathEnvVarPrefix) {
-			withoutPrefix := v[len(pathEnvVarPrefix):]
+		if strings.HasPrefix(v, pathEnvVarPrefix) {
+			withoutPrefix := strings.TrimPrefix(v, pathEnvVarPrefix)
 			paths = strings.Split(withoutPrefix, string(os.PathListSeparator))
 			break
 		}
-
 	}
 	if paths == nil {
 		return nil, ErrToolchainNotFound
@@ -183,4 +178,12 @@ func (tc *MSVCToolchain) Build(mainFullPath string) (string, error) {
 		return "", err
 	}
 	return filepath.Join(workingDir, binary), nil
+}
+
+func (tc *MSVCToolchain) InputExtensions() []string {
+	return []string{".cpp", ".cxx", ".c++"}
+}
+
+func (tc *MSVCToolchain) OutputExtension() string {
+	return ".exe"
 }

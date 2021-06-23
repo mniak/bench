@@ -28,13 +28,17 @@ var testCmd = &cobra.Command{
 			fmt.Println("Test running...")
 		}
 
-		t := bench.NewTest(args[0], input, expectedOutput)
+		t := bench.Test{
+			Program:        args[0],
+			Input:          input,
+			ExpectedOutput: expectedOutput,
+		}
 		handle(runTest(t, testName))
 	},
 }
 
 func runTest(test bench.Test, testName string) error {
-	err := test.Start()
+	started, err := bench.StartTest(test)
 	handle(err)
 
 	if test.Input != "" {
@@ -42,7 +46,7 @@ func runTest(test bench.Test, testName string) error {
 		fmt.Println(test.Input)
 	}
 
-	r, err := test.Wait()
+	r, err := bench.WaitTest(started)
 
 	if r.Output != "" {
 		fmt.Println("------------- OUTPUT ------------")

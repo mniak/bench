@@ -11,12 +11,16 @@ import (
 func TestTest(t *testing.T) {
 	sentence := gofakeit.Sentence(5)
 
-	test := NewTest("cat", sentence, sentence)
+	test := Test{
+		Program:        "cat",
+		Input:          sentence,
+		ExpectedOutput: sentence,
+	}
 
-	err := test.Start()
+	started, err := StartTest(test)
 	require.NoError(t, err, "start")
 
-	result, err := test.Wait()
+	result, err := WaitTest(started)
 	require.NoError(t, err, "wait")
 
 	assert.Equal(t, sentence, result.Output)

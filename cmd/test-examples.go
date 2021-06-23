@@ -25,7 +25,11 @@ var testExamplesCmd = &cobra.Command{
 		for _, ex := range examples {
 			fmt.Printf("Test %s running...\n", ex.Name)
 
-			t := bench.NewTest(args[0], ex.Input, ex.ExpectedOutput)
+			t := bench.Test{
+				Program:        args[0],
+				Input:          ex.Input,
+				ExpectedOutput: ex.ExpectedOutput,
+			}
 			err = runTest(t, ex.Name)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)

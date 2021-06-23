@@ -10,86 +10,93 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Test struct {
+type Tester interface {
+	Start(t Test) (started StartedTest, err error)
+	Wait(started StartedTest) (result TestResult, err error)
+}
+
+type _Tester struct {
 	programFinder ProgramFinder
-
-	program string
-
-	Input          string
-	ExpectedOutput string
-	Args           []string
-
-	stdin  *bytes.Buffer
-	stdout *bytes.Buffer
-	stderr *bytes.Buffer
-	cmd    *exec.Cmd
 }
 
-func NewTest(program, input, expectedOutput string) Test {
-	return Test{
-		program:        program,
-		Input:          input,
-		ExpectedOutput: expectedOutput,
-		Args:           make([]string, 0),
-
-		programFinder: DefaultProgramFinder,
+func NewTester(programFinder ProgramFinder) Tester {
+	return &_Tester{
+		programFinder: programFinder,
 	}
 }
 
-func (t *Test) WithProgramFinder(programFinder ProgramFinder) {
-	t.programFinder = programFinder
+type (
+	Test struct {
+		Program        string
+		Input          string
+		ExpectedOutput string
+	}
+	StartedTest struct {
+		stdin  *bytes.Buffer
+		stdout *bytes.Buffer
+		stderr *bytes.Buffer
+		cmd    *exec.Cmd
+
+		expectedOutput string
+	}
+	TestResult struct {
+		Output      string
+		ErrorOutput string
+	}
+)
+
+func (tester *_Tester) Start(t Test) (started StartedTest, err error) {
+	started.stdin = new(bytes.Buffer)
+	started.stdout = new(bytes.Buffer)
+	started.stderr = new(bytes.Buffer)
+	started.expectedOutput = t.ExpectedOutput
+
+	program, err := tester.programFinder.Find(t.Program)
+	if err != nil {
+		return
+	}
+
+	_, err = started.stdin.WriteString(t.Input)
+	if err != nil {
+		return
+	}
+	started.cmd = exec.Command(program)
+	started.cmd.Stdin = started.stdin
+	started.cmd.Stdout = started.stdout
+	started.cmd.Stderr = started.stderr
+
+	err = started.cmd.Start()
+	if err != nil {
+		err = errors.Wrap(err, "program start failed")
+	}
+	return
 }
 
-func (t *Test) Start() error {
-	t.stdin = new(bytes.Buffer)
-	t.stdout = new(bytes.Buffer)
-	t.stderr = new(bytes.Buffer)
-
-	program, err := t.programFinder.Find(t.program)
+func (t *_Tester) Wait(started StartedTest) (result TestResult, err error) {
+	err = started.cmd.Wait()
 	if err != nil {
-		return err
+		err = errors.Wrap(err, "program wait failed")
+		return
 	}
 
-	_, err = t.stdin.WriteString(t.Input)
-	if err != nil {
-		return err
-	}
-	t.cmd = exec.Command(program)
-	t.cmd.Stdin = t.stdin
-	t.cmd.Stdout = t.stdout
-	t.cmd.Stderr = t.stderr
+	result.Output = started.stdout.String()
+	result.ErrorOutput = started.stderr.String()
 
-	err = t.cmd.Start()
-	if err != nil {
-		return errors.Wrap(err, "program start failed")
-	}
-	return nil
-}
-
-func (t *Test) Wait() (TestResult, error) {
-	var result TestResult
-
-	err := t.cmd.Wait()
-	if err != nil {
-		return result, errors.Wrap(err, "program wait failed")
-	}
-
-	result.Output = t.stdout.String()
-	result.ErrorOutput = t.stderr.String()
-
-	if strings.Compare(t.ExpectedOutput, result.Output) != 0 {
-		return result, fmt.Errorf("output expectation not satisfied\n%s",
-			diff.LineDiff(t.ExpectedOutput, result.Output),
+	if strings.Compare(started.expectedOutput, result.Output) != 0 {
+		err = fmt.Errorf("output expectation not satisfied\n%s",
+			diff.LineDiff(started.expectedOutput, result.Output),
 		)
+		return
 	}
-	return result, nil
+	return
 }
 
-func (t *Test) Program() string {
-	return t.program
+var DefaultTester Tester = NewTester(defaultProgramFinder)
+
+func StartTest(t Test) (started StartedTest, err error) {
+	return DefaultTester.Start(t)
 }
 
-type TestResult struct {
-	Output      string
-	ErrorOutput string
+func WaitTest(started StartedTest) (result TestResult, err error) {
+	return DefaultTester.Wait(started)
 }

@@ -76,29 +76,59 @@ func TestDefaultProgramFinder_ShouldHaveExtensionsAndFilenames(t *testing.T) {
 
 	assert.Contains(t, defaultProgramFinder.extensions, ".py")
 
-	if runtime.GOOS == "windows" {
-		t.Run("windows", func(t *testing.T) {
-			assert.Contains(t, defaultProgramFinder.extensions, ".exe")
-			assert.Contains(t, defaultProgramFinder.extensions, ".bat")
-			assert.Contains(t, defaultProgramFinder.extensions, ".cmd")
-			assert.Contains(t, defaultProgramFinder.extensions, ".ps1")
+	switch runtime.GOOS {
+	case "windows":
+		assert.Contains(t, defaultProgramFinder.extensions, ".exe")
+		assert.Contains(t, defaultProgramFinder.extensions, ".bat")
+		assert.Contains(t, defaultProgramFinder.extensions, ".cmd")
+		assert.Contains(t, defaultProgramFinder.extensions, ".ps1")
 
-			assert.NotContains(t, defaultProgramFinder.extensions, "", "(none)")
-			assert.NotContains(t, defaultProgramFinder.extensions, ".sh")
-		})
-	} else {
-		t.Run("non-windows", func(t *testing.T) {
-			assert.NotContains(t, defaultProgramFinder.extensions, ".exe")
-			assert.NotContains(t, defaultProgramFinder.extensions, ".bat")
-			assert.NotContains(t, defaultProgramFinder.extensions, ".cmd")
-			assert.NotContains(t, defaultProgramFinder.extensions, ".ps1")
+		assert.NotContains(t, defaultProgramFinder.extensions, "", "(none)")
+		assert.NotContains(t, defaultProgramFinder.extensions, ".sh")
+	default:
+		assert.NotContains(t, defaultProgramFinder.extensions, ".exe")
+		assert.NotContains(t, defaultProgramFinder.extensions, ".bat")
+		assert.NotContains(t, defaultProgramFinder.extensions, ".cmd")
+		assert.NotContains(t, defaultProgramFinder.extensions, ".ps1")
 
-			assert.Contains(t, defaultProgramFinder.extensions, "", "(none)")
-			assert.Contains(t, defaultProgramFinder.extensions, ".sh")
-		})
+		assert.Contains(t, defaultProgramFinder.extensions, "", "(none)")
+		assert.Contains(t, defaultProgramFinder.extensions, ".sh")
 	}
 }
 
 func TestDefaultProgramFinder_UppercaseDefault_ShouldBeTheSameAsLowercaseDefault(t *testing.T) {
 	assert.Same(t, defaultProgramFinder, defaultProgramFinder)
 }
+
+// var _ ProgramFinder = new(finderWithBuilder)
+
+// func TestExecutableFinder_WhenExecutable_ShouldReturnTrue(t *testing.T) {
+// 	switch runtime.GOOS {
+// 	case "windows":
+// 		path := `C:\Windows\explorer.exe`
+
+// 		result, err := DefaultExecutableFinder.IsExecutable(path)
+// 		assert.NoError(t, err)
+// 		assert.True(t, result)
+// 	default:
+// 		path := `C:\Windows\explorer.exe`
+// 		result, err := DefaultExecutableFinder.IsExecutable(path)
+// 		assert.NoError(t, err)
+// 		assert.True(t, result)
+// 	}
+// }
+
+// func TestExecutableFinder_WhenFileDoesNotExist_ButExtensionIsOnTheList_ShouldReturnTrue(t *testing.T) {
+// 	switch runtime.GOOS {
+// 	case "windows":
+// 		path := `C:\Windows\this-program-does-not-exist.exe`
+// 		result, err := DefaultExecutableFinder.IsExecutable(path)
+// 		assert.NoError(t, err)
+// 		assert.True(t, result)
+// 	default:
+// 		path := `/opt/folder-that-doesnt-exist/program.sh`
+// 		result, err := DefaultExecutableFinder.IsExecutable(path)
+// 		assert.NoError(t, err)
+// 		assert.True(t, result)
+// 	}
+// }
