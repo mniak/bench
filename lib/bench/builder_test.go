@@ -73,7 +73,7 @@ func TestBuilderWithProgramFinder_Build(t *testing.T) {
 		Build(fakefullpath).
 		Return(fakebuilt, nil)
 
-	builder := WrapWithProgramFinder(
+	builder := WrapBuilderWithProgramFinder(
 		innerBuilder,
 		programFinder,
 	)

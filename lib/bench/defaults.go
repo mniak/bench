@@ -7,7 +7,7 @@ var DefaultProgramFinder FileFinder = &_FileFinder{
 	extensions: []string{".py"},
 }
 
-var DefaultBuilder Builder = WrapWithProgramFinder(
+var DefaultBuilder Builder = WrapBuilderWithProgramFinder(
 	NewBuilder(new(_ToolchainProducer)),
 	DefaultProgramFinder,
 )
