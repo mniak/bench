@@ -69,36 +69,3 @@ func TestWhenFolder_ShouldFindFolderNameWithExtension(t *testing.T) {
 	fullPath := filepath.Join(tempSubFolder, tempBaseName)
 	assert.Equal(t, fullPath, result)
 }
-
-// var _ FileFinder = new(finderWithBuilder)
-
-// func TestExecutableFinder_WhenExecutable_ShouldReturnTrue(t *testing.T) {
-// 	switch runtime.GOOS {
-// 	case "windows":
-// 		path := `C:\Windows\explorer.exe`
-
-// 		result, err := DefaultProgramFinder.IsExecutable(path)
-// 		assert.NoError(t, err)
-// 		assert.True(t, result)
-// 	default:
-// 		path := `C:\Windows\explorer.exe`
-// 		result, err := DefaultProgramFinder.IsExecutable(path)
-// 		assert.NoError(t, err)
-// 		assert.True(t, result)
-// 	}
-// }
-
-// func TestExecutableFinder_WhenFileDoesNotExist_ButExtensionIsOnTheList_ShouldReturnTrue(t *testing.T) {
-// 	switch runtime.GOOS {
-// 	case "windows":
-// 		path := `C:\Windows\this-program-does-not-exist.exe`
-// 		result, err := DefaultProgramFinder.IsExecutable(path)
-// 		assert.NoError(t, err)
-// 		assert.True(t, result)
-// 	default:
-// 		path := `/opt/folder-that-doesnt-exist/program.sh`
-// 		result, err := DefaultProgramFinder.IsExecutable(path)
-// 		assert.NoError(t, err)
-// 		assert.True(t, result)
-// 	}
-// }
