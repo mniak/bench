@@ -11,7 +11,11 @@ var DefaultBuilder Builder = WrapBuilderWithProgramFinder(
 	NewBuilder(new(_ToolchainProducer)),
 	DefaultProgramFinder,
 )
-var DefaultTester Tester = NewTester(DefaultProgramFinder)
+
+var DefaultTester Tester = WrapTesterWithProgramFinder(
+	NewTester(),
+	DefaultProgramFinder,
+)
 
 func Build(path string) (string, error) {
 	return DefaultBuilder.Build(path)

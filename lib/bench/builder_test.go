@@ -27,11 +27,9 @@ func TestBuilder_Build(t *testing.T) {
 		Produce(fakepath).
 		Return(tchain, nil)
 
-	builder := _Builder{
-		toolchainProducer: toolchainProducer,
-	}
+	sut := NewBuilder(toolchainProducer)
 
-	builtPath, err := builder.Build(fakepath)
+	builtPath, err := sut.Build(fakepath)
 	require.NoError(t, err, "build")
 	assert.Equal(t, fakebuilt, builtPath, "built path")
 }
@@ -73,12 +71,12 @@ func TestBuilderWithProgramFinder_Build(t *testing.T) {
 		Build(fakefullpath).
 		Return(fakebuilt, nil)
 
-	builder := WrapBuilderWithProgramFinder(
+	sut := WrapBuilderWithProgramFinder(
 		innerBuilder,
 		programFinder,
 	)
 
-	builtPath, err := builder.Build(fakepath)
+	builtPath, err := sut.Build(fakepath)
 	require.NoError(t, err, "build")
 	assert.Equal(t, fakebuilt, builtPath, "built path")
 }
