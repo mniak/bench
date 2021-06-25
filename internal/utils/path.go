@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func SplitDirAndProgram(dirOrProgram string) (string, string, error) {
@@ -21,4 +22,10 @@ func SplitDirAndProgram(dirOrProgram string) (string, string, error) {
 	}
 
 	return filepath.Dir(full), filepath.Base(full), nil
+}
+
+func ChangeExtension(filename, newExtension string) string {
+	ext := filepath.Ext(filename)
+	filenameWithoutExtension := strings.TrimSuffix(filename, ext)
+	return filenameWithoutExtension + newExtension
 }

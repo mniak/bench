@@ -14,7 +14,7 @@ import (
 func TestWhenCommand(t *testing.T) {
 	sentence := gofakeit.Sentence(5)
 
-	finder := _FileFinder{}
+	finder := _FinderOnDirByFilenameAndExtensions{}
 	program, err := finder.Find(sentence)
 	assert.NoError(t, err)
 	assert.Equal(t, sentence, program)
@@ -34,7 +34,7 @@ func TestWhenFolder_ShouldFindFilenameWithExtension(t *testing.T) {
 	require.NoError(t, err, "create temp file")
 	defer file.Close()
 
-	finder := _FileFinder{
+	finder := _FinderOnDirByFilenameAndExtensions{
 		filenames:  []string{tempName},
 		extensions: []string{tempExtension},
 	}
@@ -59,7 +59,7 @@ func TestWhenFolder_ShouldFindFolderNameWithExtension(t *testing.T) {
 	require.NoError(t, err, "create temp file")
 	defer file.Close()
 
-	finder := _FileFinder{
+	finder := _FinderOnDirByFilenameAndExtensions{
 		filenames:  []string{gofakeit.Word()},
 		extensions: []string{tempExtension},
 	}

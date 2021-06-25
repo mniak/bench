@@ -5,16 +5,12 @@ import (
 	"path/filepath"
 )
 
-type FileFinder interface {
-	Find(filenameOrFolder string) (string, error)
-}
-
-type _FileFinder struct {
+type _FinderOnDirByFilenameAndExtensions struct {
 	extensions []string
 	filenames  []string
 }
 
-func (f *_FileFinder) Find(filenameOrFolder string) (string, error) {
+func (f *_FinderOnDirByFilenameAndExtensions) Find(filenameOrFolder string) (string, error) {
 	info, err := os.Stat(filenameOrFolder)
 	if os.IsNotExist(err) {
 		return filenameOrFolder, nil
@@ -40,4 +36,11 @@ func (f *_FileFinder) Find(filenameOrFolder string) (string, error) {
 	}
 
 	return "", ErrProgramNotFound
+}
+
+func NewFinderOnDirByFilenamesAndExtensions(filenames, extensions []string) FileFinder {
+	return &_FinderOnDirByFilenameAndExtensions{
+		filenames:  filenames,
+		extensions: extensions,
+	}
 }

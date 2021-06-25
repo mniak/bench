@@ -64,7 +64,7 @@ func TestWrapWithProgramFinder(t *testing.T) {
 		Find(faketest.Program).
 		Return(fakeprogram, nil)
 
-	sut := bench.WrapTesterWithProgramFinder(tester, programFinder)
+	sut := bench.WrapTesterWithFileFinder(tester, programFinder)
 
 	started, err := sut.Start(faketest)
 	assert.NoError(t, err)
@@ -75,5 +75,42 @@ func TestWrapWithProgramFinder(t *testing.T) {
 	assert.Equal(t, fakeresult, result)
 }
 
-func TestWrapWithBuilder(t *testing.T) {
+func TestWrapWithBuilder_WhenSourceFileExists_Should(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	var faketest bench.Test
+	var fakestarted bench.StartedTest
+	var fakeresult bench.TestResult
+
+	require.NoError(t, gofakeit.Struct(&faketest))
+	require.NoError(t, gofakeit.Struct(&fakestarted))
+	require.NoError(t, gofakeit.Struct(&fakeresult))
+
+	fakeprogram := gofakeit.Word()
+	faketestWithFakeprogram := cloneTest(faketest)
+	faketestWithFakeprogram.Program = fakeprogram
+
+	tester := mocks.NewMockTester(ctrl)
+	tester.EXPECT().
+		Start(faketestWithFakeprogram).
+		Return(fakestarted, nil)
+	tester.EXPECT().
+		Wait(fakestarted).
+		Return(fakeresult, nil)
+
+	builder := mocks.NewMockBuilder(ctrl)
+	builder.EXPECT().
+		Build(faketest.Program).
+		Return(fakeprogram, nil)
+
+	sut := bench.WrapTesterWithBuilder(tester, builder)
+
+	started, err := sut.Start(faketest)
+	assert.NoError(t, err)
+
+	result, err := sut.Wait(started)
+	assert.NoError(t, err)
+
+	assert.Equal(t, fakeresult, result)
 }

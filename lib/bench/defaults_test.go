@@ -8,7 +8,7 @@ import (
 )
 
 func TestShouldHaveExtensionsAndFilenames(t *testing.T) {
-	programFinder := DefaultProgramFinder.(*_FileFinder)
+	programFinder := DefaultProgramFinder.(*_FinderOnDirByFilenameAndExtensions)
 
 	assert.Contains(t, programFinder.filenames, "main")
 	assert.Contains(t, programFinder.extensions, ".py")

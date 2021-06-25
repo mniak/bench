@@ -2,19 +2,16 @@ package bench
 
 import "runtime"
 
-var DefaultProgramFinder FileFinder = &_FileFinder{
-	filenames:  []string{"main"},
-	extensions: []string{".py"},
-}
-
-var DefaultBuilder Builder = WrapBuilderWithProgramFinder(
-	NewBuilder(new(_ToolchainProducer)),
-	DefaultProgramFinder,
-)
-
-var DefaultTester Tester = WrapTesterWithProgramFinder(
-	NewTester(),
-	DefaultProgramFinder,
+var (
+	DefaultProgramFinder FileFinder
+	DefaultBuilder       Builder = WrapBuilderWithSourceFinder(
+		NewBuilder(new(_ToolchainProducer)),
+		DefaultProgramFinder,
+	)
+	DefaultTester Tester = WrapTesterWithFileFinder(
+		NewTester(),
+		DefaultProgramFinder,
+	)
 )
 
 func Build(path string) (string, error) {
@@ -29,16 +26,24 @@ func WaitTest(started StartedTest) (result TestResult, err error) {
 	return DefaultTester.Wait(started)
 }
 
-func init() {
-	programFinder := DefaultProgramFinder.(*_FileFinder)
+func defaultFileFinder() FileFinder {
+	filenames := []string{"main"}
+	extensions := []string{".py"}
+
 	switch runtime.GOOS {
 	case "windows":
-		programFinder.extensions = append(programFinder.extensions, ".exe")
-		programFinder.extensions = append(programFinder.extensions, ".bat")
-		programFinder.extensions = append(programFinder.extensions, ".cmd")
-		programFinder.extensions = append(programFinder.extensions, ".ps1")
+		extensions = append(extensions, ".exe")
+		extensions = append(extensions, ".bat")
+		extensions = append(extensions, ".cmd")
+		extensions = append(extensions, ".ps1")
 	default:
-		programFinder.extensions = append(programFinder.extensions, "")
-		programFinder.extensions = append(programFinder.extensions, ".sh")
+		extensions = append(extensions, "")
+		extensions = append(extensions, ".sh")
 	}
+
+	return NewFinderOnDirByFilenamesAndExtensions(filenames, extensions)
+}
+
+func init() {
+	DefaultProgramFinder = defaultFileFinder()
 }
