@@ -1,15 +1,15 @@
-package bench
+package impl
 
 import (
 	"os"
 	"path/filepath"
 
+	"github.com/mniak/bench/domain"
 	"github.com/mniak/bench/internal/utils"
-	"github.com/mniak/bench/lib/toolchain"
 )
 
 type _SourceFinderByToolchain struct {
-	toolchains []toolchain.Toolchain
+	toolchains []domain.Toolchain
 }
 
 func (f *_SourceFinderByToolchain) Find(filename string) (string, error) {

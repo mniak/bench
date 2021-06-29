@@ -1,7 +1,9 @@
-package bench
+package impl
+
+import "github.com/mniak/bench/domain"
 
 type _Builder struct {
-	toolchainProducer ToolchainProducer
+	toolchainProducer domain.ToolchainProducer
 }
 
 func (b *_Builder) Build(path string) (string, error) {
@@ -12,7 +14,7 @@ func (b *_Builder) Build(path string) (string, error) {
 	return tchain.Build(path)
 }
 
-func NewBuilder(toolchainProducer ToolchainProducer) Builder {
+func NewBuilder(toolchainProducer domain.ToolchainProducer) domain.Builder {
 	return &_Builder{
 		toolchainProducer: toolchainProducer,
 	}

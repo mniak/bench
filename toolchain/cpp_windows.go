@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mniak/bench/domain"
 	"github.com/mniak/bench/internal/utils"
 )
 
@@ -18,7 +19,7 @@ type MSVCToolchain struct {
 }
 
 func init() {
-	cppToolchainFactories = append(cppToolchainFactories, func() (Toolchain, error) {
+	cppToolchainFactories = append(cppToolchainFactories, func() (domain.Toolchain, error) {
 		return NewMSVC()
 	})
 }

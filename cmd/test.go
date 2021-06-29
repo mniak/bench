@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/mniak/bench/domain"
 	"github.com/mniak/bench/lib/bench"
 	"github.com/spf13/cobra"
 )
@@ -28,7 +29,7 @@ var testCmd = &cobra.Command{
 			fmt.Println("Test running...")
 		}
 
-		t := bench.Test{
+		t := domain.Test{
 			Program:        args[0],
 			Input:          input,
 			ExpectedOutput: expectedOutput,
@@ -37,7 +38,7 @@ var testCmd = &cobra.Command{
 	},
 }
 
-func runTest(test bench.Test, testName string) error {
+func runTest(test domain.Test, testName string) error {
 	started, err := bench.StartTest(test)
 	handle(err)
 

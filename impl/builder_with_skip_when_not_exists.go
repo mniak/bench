@@ -1,9 +1,13 @@
-package bench
+package impl
 
-import "os"
+import (
+	"os"
+
+	"github.com/mniak/bench/domain"
+)
 
 type _BuilderWithSkipWhenNotExist struct {
-	Builder
+	domain.Builder
 }
 
 func (b *_BuilderWithSkipWhenNotExist) Build(filename string) (string, error) {
@@ -13,7 +17,7 @@ func (b *_BuilderWithSkipWhenNotExist) Build(filename string) (string, error) {
 	return b.Builder.Build(filename)
 }
 
-func WrapBuilderWithSkipWhenNotExist(builder Builder) Builder {
+func WrapBuilderWithSkipWhenNotExist(builder domain.Builder) domain.Builder {
 	return &_BuilderWithSkipWhenNotExist{
 		Builder: builder,
 	}

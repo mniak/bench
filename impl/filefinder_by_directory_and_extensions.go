@@ -1,8 +1,10 @@
-package bench
+package impl
 
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/mniak/bench/domain"
 )
 
 type _FinderOnDirByFilenameAndExtensions struct {
@@ -35,10 +37,10 @@ func (f *_FinderOnDirByFilenameAndExtensions) Find(filenameOrFolder string) (str
 		}
 	}
 
-	return "", ErrProgramNotFound
+	return "", domain.ErrProgramNotFound
 }
 
-func NewFinderOnDirByFilenamesAndExtensions(filenames, extensions []string) FileFinder {
+func NewFinderOnDirByFilenamesAndExtensions(filenames, extensions []string) domain.FileFinder {
 	return &_FinderOnDirByFilenameAndExtensions{
 		filenames:  filenames,
 		extensions: extensions,

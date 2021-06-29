@@ -1,8 +1,10 @@
-package bench
+package impl
+
+import "github.com/mniak/bench/domain"
 
 type _BuilderWithFileFinder struct {
-	Builder
-	fileFinder FileFinder
+	domain.Builder
+	fileFinder domain.FileFinder
 }
 
 func (b *_BuilderWithFileFinder) Build(path string) (string, error) {
@@ -14,7 +16,7 @@ func (b *_BuilderWithFileFinder) Build(path string) (string, error) {
 	return b.Builder.Build(fullpath)
 }
 
-func WrapBuilderWithSourceFinder(builder Builder, fileFinder FileFinder) Builder {
+func WrapBuilderWithSourceFinder(builder domain.Builder, fileFinder domain.FileFinder) domain.Builder {
 	return &_BuilderWithFileFinder{
 		Builder:    builder,
 		fileFinder: fileFinder,
