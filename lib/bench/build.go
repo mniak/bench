@@ -6,7 +6,7 @@ import (
 )
 
 var DefaultBuilder domain.Builder = impl.WrapBuilderWithSourceFinder(
-	impl.NewBuilder(impl.NewToolchainProducer()),
+	impl.NewBuilder(DefaultToolchainProducer),
 	DefaultProgramFinder,
 )
 
