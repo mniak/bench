@@ -144,9 +144,78 @@ func Test_WhenFilenameHasSourceExtension_AndItDoesNotExist_ShouldReturnToolchain
 	defer os.RemoveAll(tempdir)
 
 	// when filename has source extension
+	// and it does not exist
 	filename := filepath.Join(tempdir, BASENAME+EXT_SOURCE)
 
+	// should return toolchain
+	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
+	_, err = sut.Find(filename)
+	assert.Same(t, toolchain.ErrToolchainNotFound, err)
+}
+
+func Test_WhenFilenameHasUnknownExtension_AndItExists_ShouldReturnToolchain(t *testing.T) {
+	BASENAME := gofakeit.Word()
+	EXT_RUN := "." + gofakeit.FileExtension()
+	EXT_SOURCE := "." + gofakeit.FileExtension()
+	EXT_UNKNOWN := "." + gofakeit.FileExtension()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tchain := mocks.NewMockToolchain(ctrl)
+
+	tchain.EXPECT().
+		InputExtensions().
+		Return([]string{EXT_SOURCE})
+
+	tchain.EXPECT().
+		OutputExtension().
+		Return(EXT_RUN)
+
+	tempdir, err := ioutil.TempDir("", "test_*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempdir)
+
+	// when filename has unknown extension
+	filename := BASENAME + EXT_UNKNOWN
+
+	// and it exists
+	file, err := utils.TempFile(tempdir, filename)
+	require.NoError(t, err)
+	defer file.CloseAndRemove()
+
+	// should return toolchain
+	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
+	_, err = sut.Find(filename)
+	assert.Same(t, toolchain.ErrToolchainNotFound, err)
+}
+
+func Test_WhenFilenameHasUnknownExtension_AndItDoesNotExist_ShouldReturnToolchain(t *testing.T) {
+	BASENAME := gofakeit.Word()
+	EXT_RUN := "." + gofakeit.FileExtension()
+	EXT_SOURCE := "." + gofakeit.FileExtension()
+	EXT_UNKNOWN := "." + gofakeit.FileExtension()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tchain := mocks.NewMockToolchain(ctrl)
+
+	tchain.EXPECT().
+		InputExtensions().
+		Return([]string{EXT_SOURCE})
+
+	tchain.EXPECT().
+		OutputExtension().
+		Return(EXT_RUN)
+
+	tempdir, err := ioutil.TempDir("", "test_*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempdir)
+
+	// when filename has unknown extension
 	// and it does not exist
+	filename := filepath.Join(tempdir, BASENAME+EXT_UNKNOWN)
 
 	// should return toolchain
 	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
