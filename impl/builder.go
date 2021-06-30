@@ -7,7 +7,7 @@ type _Builder struct {
 }
 
 func (b *_Builder) Build(path string) (string, error) {
-	tchain, err := b.toolchainFinder.Produce(path)
+	tchain, err := b.toolchainFinder.Find(path)
 	if err != nil {
 		return "", err
 	}

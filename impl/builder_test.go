@@ -24,7 +24,7 @@ func TestBuilder_Build(t *testing.T) {
 
 	toolchainFinder := mocks.NewMockToolchainFinder(ctrl)
 	toolchainFinder.EXPECT().
-		Produce(fakepath).
+		Find(fakepath).
 		Return(tchain, nil)
 
 	sut := NewBuilder(toolchainFinder)

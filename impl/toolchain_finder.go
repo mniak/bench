@@ -13,7 +13,7 @@ type _ToolchainFinder struct {
 	toolchains []domain.Toolchain
 }
 
-func (tp *_ToolchainFinder) Produce(filename string) (domain.Toolchain, error) {
+func (tp *_ToolchainFinder) Find(filename string) (domain.Toolchain, error) {
 	ext := filepath.Ext(filename)
 	for _, tchain := range tp.toolchains {
 		if tchain.OutputExtension() == ext {

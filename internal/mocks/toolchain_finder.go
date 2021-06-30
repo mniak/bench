@@ -34,17 +34,17 @@ func (m *MockToolchainFinder) EXPECT() *MockToolchainFinderMockRecorder {
 	return m.recorder
 }
 
-// Produce mocks base method.
-func (m *MockToolchainFinder) Produce(arg0 string) (domain.Toolchain, error) {
+// Find mocks base method.
+func (m *MockToolchainFinder) Find(arg0 string) (domain.Toolchain, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Produce", arg0)
+	ret := m.ctrl.Call(m, "Find", arg0)
 	ret0, _ := ret[0].(domain.Toolchain)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Produce indicates an expected call of Produce.
-func (mr *MockToolchainFinderMockRecorder) Produce(arg0 interface{}) *gomock.Call {
+// Find indicates an expected call of Find.
+func (mr *MockToolchainFinderMockRecorder) Find(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Produce", reflect.TypeOf((*MockToolchainFinder)(nil).Produce), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockToolchainFinder)(nil).Find), arg0)
 }

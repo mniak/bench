@@ -47,11 +47,8 @@ func Test_WhenFilenameHasRunnableExtension_AndSourceExists_ShouldReturnToolchain
 	defer source.CloseAndRemove()
 
 	// should return toolchain
-	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{
-		tchain,
-	})
-
-	result, err := sut.Produce(runnable)
+	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
+	result, err := sut.Find(runnable)
 	require.NoError(t, err)
 	assert.Equal(t, tchain, result)
 }
@@ -82,10 +79,77 @@ func Test_WhenFilenameHasRunnableExtension_AndSourceDoesNotExist_ShouldErrorNotF
 	runnable := filepath.Join(tempdir, BASENAME+EXT_RUN)
 
 	// should return error: Not Found
-	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{
-		tchain,
-	})
+	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
+	_, err = sut.Find(runnable)
+	assert.Same(t, toolchain.ErrToolchainNotFound, err)
+}
 
-	_, err = sut.Produce(runnable)
+func Test_WhenFilenameHasSourceExtension_AndItExists_ShouldReturnToolchain(t *testing.T) {
+	BASENAME := gofakeit.Word()
+	EXT_RUN := "." + gofakeit.FileExtension()
+	EXT_SOURCE := "." + gofakeit.FileExtension()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tchain := mocks.NewMockToolchain(ctrl)
+
+	tchain.EXPECT().
+		InputExtensions().
+		Return([]string{EXT_SOURCE})
+
+	tchain.EXPECT().
+		OutputExtension().
+		Return(EXT_RUN)
+
+	tempdir, err := ioutil.TempDir("", "test_*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempdir)
+
+	// when filename has source extension
+	filename := BASENAME + EXT_SOURCE
+
+	// and it exists
+	file, err := utils.TempFile(tempdir, filename)
+	require.NoError(t, err)
+	defer file.CloseAndRemove()
+
+	// should return toolchain
+	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
+	result, err := sut.Find(file.Name())
+	require.NoError(t, err)
+	assert.Equal(t, tchain, result)
+}
+
+func Test_WhenFilenameHasSourceExtension_AndItDoesNotExist_ShouldReturnToolchain(t *testing.T) {
+	BASENAME := gofakeit.Word()
+	EXT_RUN := "." + gofakeit.FileExtension()
+	EXT_SOURCE := "." + gofakeit.FileExtension()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tchain := mocks.NewMockToolchain(ctrl)
+
+	tchain.EXPECT().
+		InputExtensions().
+		Return([]string{EXT_SOURCE})
+
+	tchain.EXPECT().
+		OutputExtension().
+		Return(EXT_RUN)
+
+	tempdir, err := ioutil.TempDir("", "test_*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempdir)
+
+	// when filename has source extension
+	filename := filepath.Join(tempdir, BASENAME+EXT_SOURCE)
+
+	// and it does not exist
+
+	// should return toolchain
+	sut := NewToolchainFinderFromToolchains([]domain.Toolchain{tchain})
+	_, err = sut.Find(filename)
 	assert.Same(t, toolchain.ErrToolchainNotFound, err)
 }
