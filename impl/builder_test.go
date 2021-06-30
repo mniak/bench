@@ -22,12 +22,12 @@ func TestBuilder_Build(t *testing.T) {
 		Build(fakepath).
 		Return(fakebuilt, nil)
 
-	toolchainProducer := mocks.NewMockToolchainProducer(ctrl)
-	toolchainProducer.EXPECT().
+	toolchainFinder := mocks.NewMockToolchainFinder(ctrl)
+	toolchainFinder.EXPECT().
 		Produce(fakepath).
 		Return(tchain, nil)
 
-	sut := NewBuilder(toolchainProducer)
+	sut := NewBuilder(toolchainFinder)
 
 	builtPath, err := sut.Build(fakepath)
 	require.NoError(t, err, "build")

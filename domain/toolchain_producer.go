@@ -1,5 +1,5 @@
 package domain
 
-type ToolchainProducer interface {
+type ToolchainFinder interface {
 	Produce(string) (Toolchain, error)
 }

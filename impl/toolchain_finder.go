@@ -9,11 +9,11 @@ import (
 	"github.com/mniak/bench/toolchain"
 )
 
-type _ToolchainProducer struct {
+type _ToolchainFinder struct {
 	toolchains []domain.Toolchain
 }
 
-func (tp *_ToolchainProducer) Produce(filename string) (domain.Toolchain, error) {
+func (tp *_ToolchainFinder) Produce(filename string) (domain.Toolchain, error) {
 	ext := filepath.Ext(filename)
 	for _, tchain := range tp.toolchains {
 		if tchain.OutputExtension() == ext {
@@ -36,8 +36,8 @@ func (tp *_ToolchainProducer) Produce(filename string) (domain.Toolchain, error)
 	return nil, toolchain.ErrToolchainNotFound
 }
 
-func NewToolchainProducerFromExtensionMap(toolchains []domain.Toolchain) domain.ToolchainProducer {
-	return &_ToolchainProducer{
+func NewToolchainFinderFromToolchains(toolchains []domain.Toolchain) domain.ToolchainFinder {
+	return &_ToolchainFinder{
 		toolchains: toolchains,
 	}
 }

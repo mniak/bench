@@ -3,19 +3,19 @@ package impl
 import "github.com/mniak/bench/domain"
 
 type _Builder struct {
-	toolchainProducer domain.ToolchainProducer
+	toolchainFinder domain.ToolchainFinder
 }
 
 func (b *_Builder) Build(path string) (string, error) {
-	tchain, err := b.toolchainProducer.Produce(path)
+	tchain, err := b.toolchainFinder.Produce(path)
 	if err != nil {
 		return "", err
 	}
 	return tchain.Build(path)
 }
 
-func NewBuilder(toolchainProducer domain.ToolchainProducer) domain.Builder {
+func NewBuilder(toolchainFinder domain.ToolchainFinder) domain.Builder {
 	return &_Builder{
-		toolchainProducer: toolchainProducer,
+		toolchainFinder: toolchainFinder,
 	}
 }
