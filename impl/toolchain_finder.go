@@ -16,23 +16,24 @@ type _ToolchainFinder struct {
 func (tp *_ToolchainFinder) Find(filename string) (domain.Toolchain, error) {
 	ext := filepath.Ext(filename)
 	for _, tchain := range tp.toolchains {
+		inputExtensions := tchain.InputExtensions()
+
 		if tchain.OutputExtension() == ext {
-			for _, inExt := range tchain.InputExtensions() {
+			for _, inExt := range inputExtensions {
 				if _, err := os.Stat(utils.ChangeExtension(filename, inExt)); err == nil {
 					return tchain, nil
 				}
 			}
 		}
 
-		// for _, inext  := range tchain.InputExtensions() {
-		// 	if ext == inext {
-
-		// 	}
-		// }
+		for _, inExt := range inputExtensions {
+			if inExt == ext {
+				if _, err := os.Stat(filename); err == nil {
+					return tchain, nil
+				}
+			}
+		}
 	}
-	// if factory, ok := tp.toolchains[ext]; ok {
-	// 	return factory()
-	// }
 	return nil, toolchain.ErrToolchainNotFound
 }
 
