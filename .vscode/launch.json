@@ -7,6 +7,44 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}"
+        },
+        {
+            "name": "Build my program",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "cwd": "C:\\Users\\andre\\Desktop\\exercises",
+            "args": [
+                "build",
+                ".\\hackerrank\\challenges\\new-year-chaos",
+            ]
+        },
+        {
+            "name": "Test my program",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "cwd": "C:\\Users\\andre\\Desktop\\exercises",
+            "args": [
+                "test",
+                ".\\hackerrank\\challenges\\new-year-chaos",
+                "-i", "aaaaaaaaa",
+                "-o", "bbbbbbbbb",
+            ]
+        },
+        {
+            "name": "Test and build my program w/ examples",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "cwd": "C:\\Users\\andre\\Desktop\\exercises",
+            "args": [
+                "Test","examples",
+                ".\\hackerrank\\challenges\\new-year-chaos\\",
+            ]
         }
     ]
 }
