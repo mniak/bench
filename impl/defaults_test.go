@@ -3,7 +3,6 @@ package impl
 import (
 	"testing"
 
-	"github.com/mniak/bench/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -34,11 +33,11 @@ import (
 // }
 
 func Test_DefaultBuilder_Composition(t *testing.T) {
-	var builder domain.Builder = DefaultBuilder
+	require.IsType(t, &_BuilderWithFileFinder{}, DefaultBuilder)
+	bff := DefaultBuilder.(*_BuilderWithFileFinder)
+	require.Same(t, DefaultProgramFinder, bff.fileFinder)
 
-	require.IsType(t, &_BuilderWithFileFinder{}, builder)
-	builder = builder.(*_BuilderWithFileFinder).Builder
-
-	require.IsType(t, &_BaseBuilder{}, builder)
-	builder = builder.(*_BaseBuilder)
+	require.IsType(t, &_BaseBuilder{}, bff.Builder)
+	bb := bff.Builder.(*_BaseBuilder)
+	require.Same(t, DefaultToolchainFinder, bb.toolchainFinder)
 }
