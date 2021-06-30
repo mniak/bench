@@ -56,7 +56,7 @@ func Test_WhenFindToolchain_ButToolchainFailsToBuild_ShouldFailBuildWithTheSameE
 	// but toolchain fails to build
 	tchain.EXPECT().
 		Build(fakepath).
-		Return(nil, failure)
+		Return("", failure)
 
 	// should fail build with the same error
 	sut := NewBuilder(toolchainFinder)
