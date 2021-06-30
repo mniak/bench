@@ -16,7 +16,7 @@ func (b *_BuilderWithFileFinder) Build(path string) (string, error) {
 	return b.Builder.Build(fullpath)
 }
 
-func WrapBuilderWithSourceFinder(builder domain.Builder, fileFinder domain.FileFinder) domain.Builder {
+func WrapBuilderWithFileFinder(builder domain.Builder, fileFinder domain.FileFinder) domain.Builder {
 	return &_BuilderWithFileFinder{
 		Builder:    builder,
 		fileFinder: fileFinder,
