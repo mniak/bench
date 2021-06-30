@@ -1,5 +1,12 @@
 package impl
 
+import (
+	"testing"
+
+	"github.com/mniak/bench/domain"
+	"github.com/stretchr/testify/require"
+)
+
 // func TestShouldHaveExtensionsAndFilenames(t *testing.T) {
 // 	programFinder := DefaultProgramFinder.(*_FinderOnDirByFilenameAndExtensions)
 
@@ -25,3 +32,13 @@ package impl
 // 		assert.Contains(t, programFinder.extensions, ".sh")
 // 	}
 // }
+
+func Test_DefaultBuilder_Composition(t *testing.T) {
+	var builder domain.Builder = DefaultBuilder
+
+	require.IsType(t, &_BuilderWithFileFinder{}, builder)
+	builder = builder.(*_BuilderWithFileFinder).Builder
+
+	require.IsType(t, &_BaseBuilder{}, builder)
+	builder = builder.(*_BaseBuilder)
+}

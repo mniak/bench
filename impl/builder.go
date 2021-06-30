@@ -2,11 +2,11 @@ package impl
 
 import "github.com/mniak/bench/domain"
 
-type _Builder struct {
+type _BaseBuilder struct {
 	toolchainFinder domain.ToolchainFinder
 }
 
-func (b *_Builder) Build(path string) (string, error) {
+func (b *_BaseBuilder) Build(path string) (string, error) {
 	tchain, err := b.toolchainFinder.Find(path)
 	if err != nil {
 		return "", err
@@ -15,7 +15,7 @@ func (b *_Builder) Build(path string) (string, error) {
 }
 
 func NewBuilder(toolchainFinder domain.ToolchainFinder) domain.Builder {
-	return &_Builder{
+	return &_BaseBuilder{
 		toolchainFinder: toolchainFinder,
 	}
 }

@@ -5,10 +5,7 @@ import (
 	"github.com/mniak/bench/impl"
 )
 
-var DefaultTester domain.Tester = impl.WrapTesterWithFileFinder(
-	impl.NewTester(),
-	DefaultProgramFinder,
-)
+var DefaultTester = impl.DefaultTester
 
 func StartTest(t domain.Test) (started domain.StartedTest, err error) {
 	return DefaultTester.Start(t)

@@ -5,10 +5,7 @@ import (
 	"github.com/mniak/bench/impl"
 )
 
-var DefaultBuilder domain.Builder = impl.WrapBuilderWithSourceFinder(
-	impl.NewBuilder(DefaultToolchainFinder),
-	DefaultProgramFinder,
-)
+var DefaultBuilder domain.Builder = impl.DefaultBuilder
 
 func Build(path string) (string, error) {
 	return DefaultBuilder.Build(path)
