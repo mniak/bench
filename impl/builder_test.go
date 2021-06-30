@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
@@ -10,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBuilder_Build(t *testing.T) {
+func Test_WhenFindToolchain_ShouldBuild(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -18,46 +19,67 @@ func TestBuilder_Build(t *testing.T) {
 	fakebuilt := gofakeit.Sentence(5)
 
 	tchain := mocks.NewMockToolchain(ctrl)
-	tchain.EXPECT().
-		Build(fakepath).
-		Return(fakebuilt, nil)
-
 	toolchainFinder := mocks.NewMockToolchainFinder(ctrl)
+
+	// when find toolchain
 	toolchainFinder.EXPECT().
 		Find(fakepath).
 		Return(tchain, nil)
 
-	sut := NewBuilder(toolchainFinder)
+	tchain.EXPECT().
+		Build(fakepath).
+		Return(fakebuilt, nil)
 
+	// should build
+	sut := NewBuilder(toolchainFinder)
 	builtPath, err := sut.Build(fakepath)
-	require.NoError(t, err, "build")
-	assert.Equal(t, fakebuilt, builtPath, "built path")
+	require.NoError(t, err)
+	assert.Equal(t, fakebuilt, builtPath)
 }
 
-// func TestBuilderWithProgramFinder_Build(t *testing.T) {
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+func Test_WhenFindToolchain_ButToolchainFailsToBuild_ShouldFailBuildWithTheSameError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	fakepath := gofakeit.Sentence(5)
-// 	fakefullpath := gofakeit.Sentence(5)
-// 	fakebuilt := gofakeit.Sentence(5)
+	fakepath := gofakeit.Sentence(5)
+	failure := errors.New(gofakeit.Sentence(5))
 
-// 	programFinder := mocks.NewMockFileFinder(ctrl)
-// 	programFinder.EXPECT().
-// 		Find(fakepath).
-// 		Return(fakefullpath, nil)
+	tchain := mocks.NewMockToolchain(ctrl)
 
-// 	innerBuilder := mocks.NewMockBuilder(ctrl)
-// 	innerBuilder.EXPECT().
-// 		Build(fakefullpath).
-// 		Return(fakebuilt, nil)
+	toolchainFinder := mocks.NewMockToolchainFinder(ctrl)
 
-// 	sut := WrapBuilderWithProgramFinder(
-// 		innerBuilder,
-// 		programFinder,
-// 	)
+	// when find toolchain
+	toolchainFinder.EXPECT().
+		Find(fakepath).
+		Return(tchain, nil)
 
-// 	builtPath, err := sut.Build(fakepath)
-// 	require.NoError(t, err, "build")
-// 	assert.Equal(t, fakebuilt, builtPath, "built path")
-// }
+	// but toolchain fails to build
+	tchain.EXPECT().
+		Build(fakepath).
+		Return(nil, failure)
+
+	// should fail build with the same error
+	sut := NewBuilder(toolchainFinder)
+	_, err := sut.Build(fakepath)
+	assert.Same(t, failure, err)
+}
+
+func Test_WhenDoesNotFindToolchain_ShouldFailBuildWithTheSameError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	fakepath := gofakeit.Sentence(5)
+	failure := errors.New(gofakeit.Sentence(5))
+
+	toolchainFinder := mocks.NewMockToolchainFinder(ctrl)
+
+	// when find toolchain
+	toolchainFinder.EXPECT().
+		Find(fakepath).
+		Return(nil, failure)
+
+	// should fail build with the same error
+	sut := NewBuilder(toolchainFinder)
+	_, err := sut.Build(fakepath)
+	assert.Same(t, failure, err)
+}
