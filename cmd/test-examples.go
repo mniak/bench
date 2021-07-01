@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/mniak/bench/domain"
 	"github.com/mniak/bench/lib/bench"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +26,11 @@ var testExamplesCmd = &cobra.Command{
 		for _, ex := range examples {
 			fmt.Printf("Test %s running...\n", ex.Name)
 
-			t := bench.NewTest(args[0], ex.Input, ex.ExpectedOutput)
+			t := domain.Test{
+				Program:        args[0],
+				Input:          ex.Input,
+				ExpectedOutput: ex.ExpectedOutput,
+			}
 			err = runTest(t, ex.Name)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
