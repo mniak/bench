@@ -31,7 +31,12 @@ var DefaultProgramFinder = func() domain.FileFinder {
 }()
 
 var DefaultTester = WrapTesterWithFileFinder(
-	NewTester(),
+	WrapTesterWithBuilder(
+		NewTester(),
+		WrapBuilderWithSkipWhenNotExist(
+			NewBuilder(DefaultToolchainFinder),
+		),
+	),
 	DefaultProgramFinder,
 )
 

@@ -63,4 +63,7 @@ func Test_DefaultTester_Composition(t *testing.T) {
 
 	//             BaseBuilder
 	require.IsType(t, &_BaseBuilder{}, bw_skip.Builder)
+	base_builder := bw_skip.Builder.(*_BaseBuilder)
+
+	require.Equal(t, DefaultToolchainFinder, base_builder.toolchainFinder)
 }
