@@ -12,7 +12,7 @@ import (
 )
 
 type (
-	_Tester      struct{}
+	_BaseTester  struct{}
 	_StartedTest struct {
 		stdin  *bytes.Buffer
 		stdout *bytes.Buffer
@@ -44,10 +44,10 @@ func (s *_StartedTest) ExpectedOutput() string {
 }
 
 func NewTester() domain.Tester {
-	return new(_Tester)
+	return new(_BaseTester)
 }
 
-func (t *_Tester) Start(test domain.Test) (domain.StartedTest, error) {
+func (t *_BaseTester) Start(test domain.Test) (domain.StartedTest, error) {
 	var started _StartedTest
 	started.stdin = new(bytes.Buffer)
 	started.stdout = new(bytes.Buffer)
@@ -71,7 +71,7 @@ func (t *_Tester) Start(test domain.Test) (domain.StartedTest, error) {
 	return &started, err
 }
 
-func (t *_Tester) Wait(started domain.StartedTest) (result domain.TestResult, err error) {
+func (t *_BaseTester) Wait(started domain.StartedTest) (result domain.TestResult, err error) {
 	err = started.Cmd().Wait()
 	if err != nil {
 		err = errors.Wrap(err, "program wait failed")
