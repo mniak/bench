@@ -36,3 +36,17 @@ func Test_BuilderWithSkipWhenNotExist_WhenProgramExists_ShouldRunBuild(t *testin
 	require.NoError(t, err)
 	assert.Equal(t, outputpath, result)
 }
+
+func Test_BuilderWithSkipWhenNotExist_WhenProgramDoesNotExists_ShouldNotRunBuild(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	inputpath := gofakeit.Sentence(5)
+
+	innerBuilder := mocks.NewMockBuilder(ctrl)
+	sut := WrapBuilderWithSkipWhenNotExist(innerBuilder)
+
+	result, err := sut.Build(inputpath)
+	require.NoError(t, err)
+	assert.Equal(t, inputpath, result)
+}
