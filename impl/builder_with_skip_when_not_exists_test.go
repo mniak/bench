@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_BuilderWithSkipWhenNotExist_WhenProgramExists_ShouldRunBuild(t *testing.T) {
+func Test_BuilderWithSkipWhenNotExist_WhenProgramExists_ShouldCallBuild(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -37,7 +37,7 @@ func Test_BuilderWithSkipWhenNotExist_WhenProgramExists_ShouldRunBuild(t *testin
 	assert.Equal(t, outputpath, result)
 }
 
-func Test_BuilderWithSkipWhenNotExist_WhenProgramDoesNotExists_ShouldNotRunBuild(t *testing.T) {
+func Test_BuilderWithSkipWhenNotExist_WhenProgramDoesNotExists_ShouldNotCallBuild(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
