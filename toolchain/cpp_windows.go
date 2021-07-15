@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	cppToolchainLoaders = append(cppToolchainLoaders, &_MSVCToolchainLoader{})
+	cppToolchainFactories = append(cppToolchainFactories, MSVCToolchainFactory)
 }
 
 type _MSVCToolchain struct {
@@ -22,14 +22,13 @@ type _MSVCToolchain struct {
 	clpath  string
 }
 
-func (tc *_MSVCToolchain) Build(mainFullPath string) (string, error) {
-	workingDir, main, err := utils.SplitDirAndProgram(mainFullPath)
+func (tc *_MSVCToolchain) Build(inputpath, outputpath string) (string, error) {
+	workingDir, main, err := utils.SplitDirAndProgram(inputpath)
 	if err != nil {
 		return "", err
 	}
-	binary := strings.TrimSuffix(main, filepath.Ext(main)) + ".exe"
 
-	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+binary)
+	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Dir = workingDir
@@ -38,7 +37,7 @@ func (tc *_MSVCToolchain) Build(mainFullPath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(workingDir, binary), nil
+	return filepath.Join(workingDir, outputpath), nil
 }
 
 func findVc2017() (string, error) {
@@ -151,9 +150,7 @@ func findExe(exe string, paths []string) (string, error) {
 	return "", ErrToolchainNotFound
 }
 
-type _MSVCToolchainLoader struct{}
-
-func (t *_MSVCToolchainLoader) Load() (domain.Toolchain, error) {
+func MSVCToolchainFactory() (domain.Toolchain, error) {
 	var result _MSVCToolchain
 	var err error
 
@@ -179,12 +176,4 @@ func (t *_MSVCToolchainLoader) Load() (domain.Toolchain, error) {
 	}
 
 	return &result, nil
-}
-
-func (t *_MSVCToolchainLoader) InputExtensions() []string {
-	return []string{".cpp", ".cxx", ".c++"}
-}
-
-func (t *_MSVCToolchainLoader) OutputExtension() string {
-	return ".exe"
 }

@@ -15,7 +15,8 @@ func Test_WhenFindToolchain_ShouldBuild(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	fakepath := gofakeit.Sentence(5)
+	fakeinputpath := gofakeit.Sentence(5)
+	fakeoutputpath := gofakeit.Sentence(5)
 	fakebuilt := gofakeit.Sentence(5)
 
 	tchain := mocks.NewMockToolchain(ctrl)
@@ -23,16 +24,16 @@ func Test_WhenFindToolchain_ShouldBuild(t *testing.T) {
 
 	// when find toolchain
 	toolchainFinder.EXPECT().
-		Find(fakepath).
+		Find(fakeinputpath).
 		Return(tchain, nil)
 
 	tchain.EXPECT().
-		Build(fakepath).
+		Build(fakeinputpath, fakeoutputpath).
 		Return(fakebuilt, nil)
 
 	// should build
 	sut := NewBuilder(toolchainFinder)
-	builtPath, err := sut.Build(fakepath)
+	builtPath, err := sut.Build(fakeinputpath)
 	require.NoError(t, err)
 	assert.Equal(t, fakebuilt, builtPath)
 }

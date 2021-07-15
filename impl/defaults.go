@@ -40,20 +40,12 @@ var DefaultTester = WrapTesterWithFileFinder(
 	DefaultProgramFinder,
 )
 
-var DefaultToolchainFinder domain.ToolchainFinder = NewToolchainFinderFromToolchainFactories(getToolchainFactories()...)
+var DefaultToolchainFinder domain.ToolchainFinder = NewToolchainFinderFromToolchainLoaders(toolchainLoaders...)
 
-func getToolchainFactories() []domain.ToolchainFactory {
-	factories := []domain.ToolchainFactory{
-		toolchain.NewCPPFactory(),
-	}
+var toolchainLoaders []domain.ToolchainLoader
 
-	result := make([]domain.ToolchainLoader, 0)
-	for _, fac := range factories {
-		tchain, err := fac()
-		if err != nil {
-			continue
-		}
-		result = append(result, tchain)
+func init() {
+	toolchainLoaders = []domain.ToolchainLoader{
+		toolchain.NewCPPLoader(),
 	}
-	return result
 }

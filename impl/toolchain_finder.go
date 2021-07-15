@@ -37,7 +37,7 @@ func (tp *_ToolchainFinder) Find(filename string) (domain.ToolchainLoader, error
 	return nil, toolchain.ErrToolchainNotFound
 }
 
-func NewToolchainFinderFromToolchainFactories(toolchains ...domain.ToolchainFactory) domain.ToolchainFinder {
+func NewToolchainFinderFromToolchainLoaders(toolchains ...domain.ToolchainLoader) domain.ToolchainFinder {
 	return &_ToolchainFinder{
 		toolchains: toolchains,
 	}

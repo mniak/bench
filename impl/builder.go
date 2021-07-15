@@ -1,17 +1,28 @@
 package impl
 
-import "github.com/mniak/bench/domain"
+import (
+	"path/filepath"
+	"strings"
+
+	"github.com/mniak/bench/domain"
+)
 
 type _BaseBuilder struct {
 	toolchainFinder domain.ToolchainFinder
 }
 
-func (b *_BaseBuilder) Build(path string) (string, error) {
-	tchain, err := b.toolchainFinder.Find(path)
+func (b *_BaseBuilder) Build(inputpath string) (string, error) {
+	tloader, err := b.toolchainFinder.Find(inputpath)
 	if err != nil {
 		return "", err
 	}
-	return tchain.Build(path)
+	tchain, err := tloader.Load()
+	if err != nil {
+		return "", err
+	}
+	outputpath := strings.TrimSuffix(inputpath, filepath.Ext(inputpath)) + domain.OSBinaryExtension
+
+	return tchain.Build(inputpath, outputpath)
 }
 
 func NewBuilder(toolchainFinder domain.ToolchainFinder) domain.Builder {

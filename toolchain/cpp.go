@@ -2,8 +2,12 @@ package toolchain
 
 import "github.com/mniak/bench/domain"
 
-var cppToolchainLoaders = make([]domain.ToolchainLoader, 0)
+var cppToolchainFactories = make([]domain.ToolchainFactory, 0)
 
-func NewCPPFactory() domain.ToolchainFactory {
-	return MultiFactory(cppToolchainLoaders)
+func NewCPPLoader() domain.ToolchainLoader {
+	return NewLoaderFromFactories(
+		cppToolchainFactories,
+		[]string{".cpp", ".cxx", ".c++"},
+		domain.OSBinaryExtension,
+	)
 }
