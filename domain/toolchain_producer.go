@@ -1,5 +1,5 @@
 package domain
 
 type ToolchainFinder interface {
-	Find(string) (Toolchain, error)
+	Find(string) (ToolchainLoader, error)
 }

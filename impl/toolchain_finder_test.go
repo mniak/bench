@@ -8,6 +8,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
+	"github.com/mniak/bench/domain"
 	"github.com/mniak/bench/internal/mocks"
 	"github.com/mniak/bench/internal/utils"
 	"github.com/mniak/bench/toolchain"
@@ -46,7 +47,7 @@ func Test_WhenFilenameHasRunnableExtension_AndSourceExists_ShouldReturnToolchain
 	defer source.CloseAndRemove()
 
 	// should return toolchain
-	sut := NewToolchainFinderFromToolchains(tchain)
+	var sut domain.ToolchainFinder // := NewToolchainFinderFromToolchains(tchain)
 	result, err := sut.Find(runnable)
 	require.NoError(t, err)
 	assert.Equal(t, tchain, result)
@@ -78,7 +79,7 @@ func Test_WhenFilenameHasRunnableExtension_AndSourceDoesNotExist_ShouldErrorNotF
 	runnable := filepath.Join(tempdir, BASENAME+EXT_RUN)
 
 	// should return error: Not Found
-	sut := NewToolchainFinderFromToolchains(tchain)
+	var sut domain.ToolchainFinder // := NewToolchainFinderFromToolchains(tchain)
 	_, err = sut.Find(runnable)
 	assert.Same(t, toolchain.ErrToolchainNotFound, err)
 }
@@ -114,7 +115,7 @@ func Test_WhenFilenameHasSourceExtension_AndItExists_ShouldReturnToolchain(t *te
 	defer file.CloseAndRemove()
 
 	// should return toolchain
-	sut := NewToolchainFinderFromToolchains(tchain)
+	var sut domain.ToolchainFinder // := NewToolchainFinderFromToolchains(tchain)
 	result, err := sut.Find(file.Name())
 	require.NoError(t, err)
 	assert.Equal(t, tchain, result)
@@ -147,7 +148,7 @@ func Test_WhenFilenameHasSourceExtension_AndItDoesNotExist_ShouldReturnToolchain
 	filename := filepath.Join(tempdir, BASENAME+EXT_SOURCE)
 
 	// should return toolchain
-	sut := NewToolchainFinderFromToolchains(tchain)
+	var sut domain.ToolchainFinder // := NewToolchainFinderFromToolchains(tchain)
 	_, err = sut.Find(filename)
 	assert.Same(t, toolchain.ErrToolchainNotFound, err)
 }
@@ -184,7 +185,7 @@ func Test_WhenFilenameHasUnknownExtension_AndItExists_ShouldReturnToolchain(t *t
 	defer file.CloseAndRemove()
 
 	// should return toolchain
-	sut := NewToolchainFinderFromToolchains(tchain)
+	var sut domain.ToolchainFinder // := NewToolchainFinderFromToolchains(tchain)
 	_, err = sut.Find(filename)
 	assert.Same(t, toolchain.ErrToolchainNotFound, err)
 }
@@ -217,7 +218,7 @@ func Test_WhenFilenameHasUnknownExtension_AndItDoesNotExist_ShouldReturnToolchai
 	filename := filepath.Join(tempdir, BASENAME+EXT_UNKNOWN)
 
 	// should return toolchain
-	sut := NewToolchainFinderFromToolchains(tchain)
+	var sut domain.ToolchainFinder // := NewToolchainFinderFromToolchains(tchain)
 	_, err = sut.Find(filename)
 	assert.Same(t, toolchain.ErrToolchainNotFound, err)
 }

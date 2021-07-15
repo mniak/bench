@@ -13,15 +13,32 @@ import (
 	"github.com/mniak/bench/internal/utils"
 )
 
-type MSVCToolchain struct {
-	clpath  string
-	envvars []string
+func init() {
+	cppToolchainLoaders = append(cppToolchainLoaders, &_MSVCToolchainLoader{})
 }
 
-func init() {
-	cppToolchainFactories = append(cppToolchainFactories, func() (domain.Toolchain, error) {
-		return NewMSVC()
-	})
+type _MSVCToolchain struct {
+	envvars []string
+	clpath  string
+}
+
+func (tc *_MSVCToolchain) Build(mainFullPath string) (string, error) {
+	workingDir, main, err := utils.SplitDirAndProgram(mainFullPath)
+	if err != nil {
+		return "", err
+	}
+	binary := strings.TrimSuffix(main, filepath.Ext(main)) + ".exe"
+
+	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+binary)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Dir = workingDir
+	cmd.Env = append(cmd.Env, tc.envvars...)
+	err = cmd.Run()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(workingDir, binary), nil
 }
 
 func findVc2017() (string, error) {
@@ -108,34 +125,6 @@ func getVcVars() ([]string, error) {
 
 const pathEnvVarPrefix = "PATH="
 
-func NewMSVC() (*MSVCToolchain, error) {
-	var result MSVCToolchain
-	var err error
-
-	result.envvars, err = getVcVars()
-	if err != nil {
-		return &result, err
-	}
-	var paths []string
-	for _, v := range result.envvars {
-		if strings.HasPrefix(v, pathEnvVarPrefix) {
-			withoutPrefix := strings.TrimPrefix(v, pathEnvVarPrefix)
-			paths = strings.Split(withoutPrefix, string(os.PathListSeparator))
-			break
-		}
-	}
-	if paths == nil {
-		return nil, ErrToolchainNotFound
-	}
-
-	result.clpath, err = findExe("cl.exe", paths)
-	if err != nil {
-		return &result, err
-	}
-
-	return &result, nil
-}
-
 func findExe(exe string, paths []string) (string, error) {
 	if paths == nil {
 		paths = strings.Split(os.Getenv("path"), string(os.PathListSeparator))
@@ -162,29 +151,40 @@ func findExe(exe string, paths []string) (string, error) {
 	return "", ErrToolchainNotFound
 }
 
-func (tc *MSVCToolchain) Build(mainFullPath string) (string, error) {
-	workingDir, main, err := utils.SplitDirAndProgram(mainFullPath)
-	if err != nil {
-		return "", err
-	}
-	binary := strings.TrimSuffix(main, filepath.Ext(main)) + ".exe"
+type _MSVCToolchainLoader struct{}
 
-	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+binary)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Dir = workingDir
-	cmd.Env = append(cmd.Env, tc.envvars...)
-	err = cmd.Run()
+func (t *_MSVCToolchainLoader) Load() (domain.Toolchain, error) {
+	var result _MSVCToolchain
+	var err error
+
+	result.envvars, err = getVcVars()
 	if err != nil {
-		return "", err
+		return &result, err
 	}
-	return filepath.Join(workingDir, binary), nil
+	var paths []string
+	for _, v := range result.envvars {
+		if strings.HasPrefix(v, pathEnvVarPrefix) {
+			withoutPrefix := strings.TrimPrefix(v, pathEnvVarPrefix)
+			paths = strings.Split(withoutPrefix, string(os.PathListSeparator))
+			break
+		}
+	}
+	if paths == nil {
+		return nil, ErrToolchainNotFound
+	}
+
+	result.clpath, err = findExe("cl.exe", paths)
+	if err != nil {
+		return &result, err
+	}
+
+	return &result, nil
 }
 
-func (tc *MSVCToolchain) InputExtensions() []string {
+func (t *_MSVCToolchainLoader) InputExtensions() []string {
 	return []string{".cpp", ".cxx", ".c++"}
 }
 
-func (tc *MSVCToolchain) OutputExtension() string {
+func (t *_MSVCToolchainLoader) OutputExtension() string {
 	return ".exe"
 }
