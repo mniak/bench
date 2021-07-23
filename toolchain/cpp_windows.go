@@ -22,10 +22,10 @@ type _MSVCToolchain struct {
 	clpath  string
 }
 
-func (tc *_MSVCToolchain) Build(inputpath, outputpath string) (string, error) {
+func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
 	workingDir, main, err := utils.SplitDirAndProgram(inputpath)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
@@ -35,9 +35,9 @@ func (tc *_MSVCToolchain) Build(inputpath, outputpath string) (string, error) {
 	cmd.Env = append(cmd.Env, tc.envvars...)
 	err = cmd.Run()
 	if err != nil {
-		return "", err
+		return err
 	}
-	return filepath.Join(workingDir, outputpath), nil
+	return nil
 }
 
 func findVc2017() (string, error) {

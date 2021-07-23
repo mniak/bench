@@ -20,13 +20,17 @@ func (b *_BaseBuilder) Build(inputpath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	outputpath := strings.TrimSuffix(inputpath, filepath.Ext(inputpath)) + domain.OSBinaryExtension
-
-	return tchain.Build(inputpath, outputpath)
+	outputpath := getBinaryPath(inputpath)
+	err = tchain.Build(inputpath, outputpath)
+	return outputpath, err
 }
 
 func NewBuilder(toolchainFinder domain.ToolchainFinder) domain.Builder {
 	return &_BaseBuilder{
 		toolchainFinder: toolchainFinder,
 	}
+}
+
+func getBinaryPath(inputpath string) string {
+	return strings.TrimSuffix(inputpath, filepath.Ext(inputpath)) + domain.OSBinaryExtension
 }

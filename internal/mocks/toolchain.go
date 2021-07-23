@@ -34,12 +34,11 @@ func (m *MockToolchain) EXPECT() *MockToolchainMockRecorder {
 }
 
 // Build mocks base method.
-func (m *MockToolchain) Build(arg0, arg1 string) (string, error) {
+func (m *MockToolchain) Build(arg0, arg1 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Build", arg0, arg1)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Build indicates an expected call of Build.
