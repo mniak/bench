@@ -9,7 +9,7 @@ import (
 )
 
 type _SourceFinderByToolchain struct {
-	toolchains []domain.Toolchain
+	toolchains []domain.ToolchainLoader
 }
 
 func (f *_SourceFinderByToolchain) Find(filename string) (string, error) {

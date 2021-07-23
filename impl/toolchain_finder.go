@@ -10,10 +10,10 @@ import (
 )
 
 type _ToolchainFinder struct {
-	toolchains []domain.Toolchain
+	toolchains []domain.ToolchainLoader
 }
 
-func (tp *_ToolchainFinder) Find(filename string) (domain.Toolchain, error) {
+func (tp *_ToolchainFinder) Find(filename string) (domain.ToolchainLoader, error) {
 	ext := filepath.Ext(filename)
 	for _, tchain := range tp.toolchains {
 		inputExtensions := tchain.InputExtensions()
@@ -37,7 +37,7 @@ func (tp *_ToolchainFinder) Find(filename string) (domain.Toolchain, error) {
 	return nil, toolchain.ErrToolchainNotFound
 }
 
-func NewToolchainFinderFromToolchains(toolchains ...domain.Toolchain) domain.ToolchainFinder {
+func NewToolchainFinderFromToolchainLoaders(toolchains ...domain.ToolchainLoader) domain.ToolchainFinder {
 	return &_ToolchainFinder{
 		toolchains: toolchains,
 	}

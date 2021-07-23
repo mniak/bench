@@ -34,44 +34,15 @@ func (m *MockToolchain) EXPECT() *MockToolchainMockRecorder {
 }
 
 // Build mocks base method.
-func (m *MockToolchain) Build(arg0 string) (string, error) {
+func (m *MockToolchain) Build(arg0, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Build", arg0)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "Build", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Build indicates an expected call of Build.
-func (mr *MockToolchainMockRecorder) Build(arg0 interface{}) *gomock.Call {
+func (mr *MockToolchainMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockToolchain)(nil).Build), arg0)
-}
-
-// InputExtensions mocks base method.
-func (m *MockToolchain) InputExtensions() []string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InputExtensions")
-	ret0, _ := ret[0].([]string)
-	return ret0
-}
-
-// InputExtensions indicates an expected call of InputExtensions.
-func (mr *MockToolchainMockRecorder) InputExtensions() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InputExtensions", reflect.TypeOf((*MockToolchain)(nil).InputExtensions))
-}
-
-// OutputExtension mocks base method.
-func (m *MockToolchain) OutputExtension() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "OutputExtension")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// OutputExtension indicates an expected call of OutputExtension.
-func (mr *MockToolchainMockRecorder) OutputExtension() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OutputExtension", reflect.TypeOf((*MockToolchain)(nil).OutputExtension))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockToolchain)(nil).Build), arg0, arg1)
 }
