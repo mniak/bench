@@ -35,10 +35,10 @@ func (m *MockToolchainFinder) EXPECT() *MockToolchainFinderMockRecorder {
 }
 
 // Find mocks base method.
-func (m *MockToolchainFinder) Find(arg0 string) (domain.Toolchain, error) {
+func (m *MockToolchainFinder) Find(arg0 string) (domain.ToolchainLoader, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", arg0)
-	ret0, _ := ret[0].(domain.Toolchain)
+	ret0, _ := ret[0].(domain.ToolchainLoader)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
