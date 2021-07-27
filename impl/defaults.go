@@ -9,7 +9,7 @@ import (
 
 var DefaultBuilder = WrapBuilderWithFileFinder(
 	NewBuilder(DefaultToolchainFinder),
-	DefaultProgramFinder,
+	DefaultSourceFinder,
 )
 
 var DefaultProgramFinder = func() domain.FileFinder {
@@ -25,6 +25,18 @@ var DefaultProgramFinder = func() domain.FileFinder {
 	default:
 		extensions = append(extensions, "")
 		extensions = append(extensions, ".sh")
+	}
+
+	return NewFinderOnDirByFilenamesAndExtensions(filenames, extensions)
+}()
+
+var DefaultSourceFinder = func() domain.FileFinder {
+	filenames := []string{"main"}
+	extensions := []string{}
+
+	var toolchainLoaders []domain.ToolchainLoader
+	for _, tcl := range toolchainLoaders {
+		extensions = append(extensions, tcl.InputExtensions()...)
 	}
 
 	return NewFinderOnDirByFilenamesAndExtensions(filenames, extensions)

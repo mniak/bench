@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mniak/bench/impl"
+	"github.com/mniak/bench/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,5 +33,5 @@ void main() {
 	err = Build(tempdir)
 	require.NoError(t, err)
 
-	assert.FileExists(t, filepath.Join(tempdir, "main"+impl.DEFAULT_BINARY_OS_EXTENSION))
+	assert.FileExists(t, filepath.Join(tempdir, "main"+domain.OSBinaryExtension))
 }
