@@ -12,10 +12,16 @@ var runCmd = &cobra.Command{
 	Use:  "build <folder>",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		builtPath, err := bench.Build(args[0])
-		handle(err)
-		fmt.Println(builtPath)
+		handle(Build(args[0]))
 	},
+}
+
+func Build(folder string) error {
+	builtPath, err := bench.Build(folder)
+	if err == nil {
+		fmt.Println(builtPath)
+	}
+	return err
 }
 
 func init() {
