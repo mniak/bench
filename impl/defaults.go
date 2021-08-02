@@ -7,12 +7,26 @@ import (
 	"github.com/mniak/bench/toolchain"
 )
 
-var DefaultBuilder = WrapBuilderWithFileFinder(
-	NewBuilder(DefaultToolchainFinder),
-	DefaultSourceFinder,
+var (
+	DefaultProgramFinder   domain.FileFinder
+	DefaultToolchainFinder domain.ToolchainFinder
+
+	DefaultBuilder domain.Builder
+	DefaultTester  domain.Tester
 )
 
-var DefaultProgramFinder = func() domain.FileFinder {
+func createSourceFinder(toolchainLoaders []domain.ToolchainLoader) domain.FileFinder {
+	filenames := []string{"main"}
+	extensions := []string{}
+
+	for _, tcl := range toolchainLoaders {
+		extensions = append(extensions, tcl.InputExtensions()...)
+	}
+
+	return NewFinderOnDirByFilenamesAndExtensions(filenames, extensions)
+}
+
+func createProgramFinder() domain.FileFinder {
 	filenames := []string{"main"}
 	extensions := []string{".py"}
 
@@ -28,36 +42,29 @@ var DefaultProgramFinder = func() domain.FileFinder {
 	}
 
 	return NewFinderOnDirByFilenamesAndExtensions(filenames, extensions)
-}()
-
-var DefaultSourceFinder = func() domain.FileFinder {
-	filenames := []string{"main"}
-	extensions := []string{}
-
-	var toolchainLoaders []domain.ToolchainLoader
-	for _, tcl := range toolchainLoaders {
-		extensions = append(extensions, tcl.InputExtensions()...)
-	}
-
-	return NewFinderOnDirByFilenamesAndExtensions(filenames, extensions)
-}()
-
-var DefaultTester = WrapTesterWithFileFinder(
-	WrapTesterWithBuilder(
-		NewTester(),
-		WrapBuilderWithSkipWhenNotExist(
-			NewBuilder(DefaultToolchainFinder),
-		),
-	),
-	DefaultProgramFinder,
-)
-
-var DefaultToolchainFinder domain.ToolchainFinder = NewToolchainFinderFromToolchainLoaders(toolchainLoaders...)
-
-var toolchainLoaders []domain.ToolchainLoader
+}
 
 func init() {
-	toolchainLoaders = []domain.ToolchainLoader{
+	toolchainLoaders := []domain.ToolchainLoader{
 		toolchain.NewCPPLoader(),
 	}
+	defaultSourceFinder := createSourceFinder(toolchainLoaders)
+
+	DefaultProgramFinder = createProgramFinder()
+	DefaultToolchainFinder = NewToolchainFinderFromToolchainLoaders(toolchainLoaders...)
+
+	DefaultBuilder = WrapBuilderWithFileFinder(
+		NewBuilder(DefaultToolchainFinder),
+		defaultSourceFinder,
+	)
+
+	DefaultTester = WrapTesterWithFileFinder(
+		WrapTesterWithBuilder(
+			NewTester(),
+			WrapBuilderWithSkipWhenNotExist(
+				NewBuilder(DefaultToolchainFinder),
+			),
+		),
+		DefaultProgramFinder,
+	)
 }

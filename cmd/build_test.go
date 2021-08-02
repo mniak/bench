@@ -12,13 +12,14 @@ import (
 
 func Test_Build_WithFolderName(t *testing.T) {
 	const SOURCE_CODE = `
-#include <strings>
+#include <string>
+#include <iostream>
 
 using namespace std;
 
 void main() {
-    string name;6
-    name << cin;
+    string name;
+    cin >> name;
     cout << "BUILD: ";
     cout << "Hello, " << name << endl;
 }`
