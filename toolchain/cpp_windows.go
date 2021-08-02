@@ -160,8 +160,8 @@ func MSVCToolchainFactory() (domain.Toolchain, error) {
 	}
 	var paths []string
 	for _, v := range result.envvars {
-		if strings.HasPrefix(v, pathEnvVarPrefix) {
-			withoutPrefix := strings.TrimPrefix(v, pathEnvVarPrefix)
+		if strings.HasPrefix(strings.ToUpper(v), pathEnvVarPrefix) {
+			withoutPrefix := v[len(pathEnvVarPrefix):]
 			paths = strings.Split(withoutPrefix, string(os.PathListSeparator))
 			break
 		}
