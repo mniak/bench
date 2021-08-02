@@ -9,7 +9,7 @@ import (
 func Test_DefaultBuilder_Composition(t *testing.T) {
 	require.IsType(t, &_BuilderWithFileFinder{}, DefaultBuilder)
 	bff := DefaultBuilder.(*_BuilderWithFileFinder)
-	require.Same(t, DefaultProgramFinder, bff.fileFinder)
+	require.Same(t, DefaultSourceFinder, bff.fileFinder)
 
 	require.IsType(t, &_BaseBuilder{}, bff.Builder)
 	bb := bff.Builder.(*_BaseBuilder)

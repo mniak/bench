@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	DefaultSourceFinder    domain.FileFinder
 	DefaultProgramFinder   domain.FileFinder
 	DefaultToolchainFinder domain.ToolchainFinder
 
@@ -48,14 +49,14 @@ func init() {
 	toolchainLoaders := []domain.ToolchainLoader{
 		toolchain.NewCPPLoader(),
 	}
-	defaultSourceFinder := createSourceFinder(toolchainLoaders)
 
+	DefaultSourceFinder = createSourceFinder(toolchainLoaders)
 	DefaultProgramFinder = createProgramFinder()
 	DefaultToolchainFinder = NewToolchainFinderFromToolchainLoaders(toolchainLoaders...)
 
 	DefaultBuilder = WrapBuilderWithFileFinder(
 		NewBuilder(DefaultToolchainFinder),
-		defaultSourceFinder,
+		DefaultSourceFinder,
 	)
 
 	DefaultTester = WrapTesterWithFileFinder(
