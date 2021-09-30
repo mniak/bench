@@ -66,6 +66,6 @@ func init() {
 				NewBuilder(DefaultToolchainFinder),
 			),
 		),
-		DefaultProgramFinder,
+		DefaultSourceFinder,
 	)
 }
