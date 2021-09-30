@@ -28,6 +28,11 @@ func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
 		return err
 	}
 
+	outputpath, err = filepath.Abs(outputpath)
+	if err != nil {
+		return err
+	}
+
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
