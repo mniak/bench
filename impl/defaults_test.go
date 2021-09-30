@@ -18,26 +18,19 @@ func Test_DefaultBuilder_Composition(t *testing.T) {
 }
 
 func Test_DefaultTester_Composition(t *testing.T) {
-	// DefaultTester =
-	//   decorator WithFullPath over
 	require.IsType(t, &_TesterWithFileFinder{}, DefaultTester)
-	tw_finder := DefaultTester.(*_TesterWithFileFinder)
 
-	//   decorator WithBuilder(TestBuilder) over
-	require.IsType(t, &_TesterWithBuilder{}, tw_finder.Tester)
-	tw_builder := tw_finder.Tester.(*_TesterWithBuilder)
+	tester_with_filefinder := DefaultTester.(*_TesterWithFileFinder)
+	require.IsType(t, &_TesterWithBuilder{}, tester_with_filefinder.Tester)
+	require.Same(t, DefaultSourceFinder, tester_with_filefinder.fileFinder)
 
-	//             BaseTester
-	require.IsType(t, &_BaseTester{}, tw_builder.Tester)
+	tester_with_builder := tester_with_filefinder.Tester.(*_TesterWithBuilder)
+	require.IsType(t, &_BaseTester{}, tester_with_builder.Tester)
+	require.IsType(t, &_BuilderWithSkipWhenNotExist{}, tester_with_builder.builder)
 
-	// TestBuilder =
-	//   decorator SkipIfDoesNotExist over
-	require.IsType(t, &_BuilderWithSkipWhenNotExist{}, tw_builder.builder)
-	bw_skip := tw_builder.builder.(*_BuilderWithSkipWhenNotExist)
+	builder_with_skip := tester_with_builder.builder.(*_BuilderWithSkipWhenNotExist)
+	require.IsType(t, &_BaseBuilder{}, builder_with_skip.Builder)
 
-	//             BaseBuilder
-	require.IsType(t, &_BaseBuilder{}, bw_skip.Builder)
-	base_builder := bw_skip.Builder.(*_BaseBuilder)
-
-	require.Equal(t, DefaultToolchainFinder, base_builder.toolchainFinder)
+	base_builder := builder_with_skip.Builder.(*_BaseBuilder)
+	require.Same(t, DefaultToolchainFinder, base_builder.toolchainFinder)
 }
