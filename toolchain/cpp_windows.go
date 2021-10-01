@@ -20,6 +20,7 @@ func init() {
 type _MSVCToolchain struct {
 	envvars []string
 	clpath  string
+	verbose bool
 }
 
 func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
@@ -34,8 +35,10 @@ func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
 	}
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
+	if tc.verbose {
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+	}
 	cmd.Dir = workingDir
 	cmd.Env = append(cmd.Env, tc.envvars...)
 	err = cmd.Run()
