@@ -3,6 +3,7 @@ package toolchain
 import (
 	"bufio"
 	"bytes"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -20,7 +21,8 @@ func init() {
 type _MSVCToolchain struct {
 	envvars []string
 	clpath  string
-	verbose bool
+	stdout  io.Writer
+	stderr  io.Writer
 }
 
 func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
@@ -35,10 +37,8 @@ func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
 	}
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
-	if tc.verbose {
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-	}
+	cmd.Stderr = tc.stderr
+	cmd.Stdout = tc.stdout
 	cmd.Dir = workingDir
 	cmd.Env = append(cmd.Env, tc.envvars...)
 	err = cmd.Run()
