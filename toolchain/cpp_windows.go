@@ -3,7 +3,6 @@ package toolchain
 import (
 	"bufio"
 	"bytes"
-	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -21,24 +20,22 @@ func init() {
 type _MSVCToolchain struct {
 	envvars []string
 	clpath  string
-	stdout  io.Writer
-	stderr  io.Writer
 }
 
-func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
-	workingDir, main, err := utils.SplitDirAndProgram(inputpath)
+func (tc *_MSVCToolchain) Build(request domain.BuildRequest) error {
+	workingDir, main, err := utils.SplitDirAndProgram(request.Input)
 	if err != nil {
 		return err
 	}
 
-	outputpath, err = filepath.Abs(outputpath)
+	outputpath, err := filepath.Abs(request.Output)
 	if err != nil {
 		return err
 	}
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
-	cmd.Stderr = tc.stderr
-	cmd.Stdout = tc.stdout
+	cmd.Stderr = request.Stdout
+	cmd.Stdout = request.Stderr
 	cmd.Dir = workingDir
 	cmd.Env = append(cmd.Env, tc.envvars...)
 	err = cmd.Run()

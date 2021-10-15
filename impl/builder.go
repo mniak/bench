@@ -1,6 +1,9 @@
 package impl
 
 import (
+	"bytes"
+	"io"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -21,7 +24,21 @@ func (b *_BaseBuilder) Build(inputpath string) (string, error) {
 		return "", err
 	}
 	outputpath := getBinaryPath(inputpath)
-	err = tchain.Build(inputpath, outputpath)
+	var buffout bytes.Buffer
+	var bufferr bytes.Buffer
+
+	req := domain.BuildRequest{
+		Stdout: &buffout,
+		Stderr: &bufferr,
+		Input:  inputpath,
+		Output: outputpath,
+	}
+	err = tchain.Build(req)
+
+	if err != nil {
+		io.Copy(os.Stdout, &buffout)
+		io.Copy(os.Stderr, &bufferr)
+	}
 	return outputpath, err
 }
 
