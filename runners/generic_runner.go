@@ -1,16 +1,14 @@
-package runner
+package runners
 
 import (
 	"os/exec"
-
-	"github.com/mniak/bench/domain"
 )
 
 type _GenericRunner struct {
 	program string
 }
 
-func (r *_GenericRunner) Start(runnerCmd domain.RunnerCmd) (domain.StartedRunnerCmd, error) {
+func (r *_GenericRunner) Start(runnerCmd RunnerCmd) (StartedRunnerCmd, error) {
 	cmd := exec.Command(r.program, runnerCmd.Path)
 	cmd.Stdin = runnerCmd.Stdin
 	cmd.Stdout = runnerCmd.Stdout
@@ -19,7 +17,7 @@ func (r *_GenericRunner) Start(runnerCmd domain.RunnerCmd) (domain.StartedRunner
 	if err != nil {
 		return nil, err
 	}
-	return domain.NewStartedRunnerCmd(cmd), nil
+	return NewStartedRunnerCmd(cmd), nil
 }
 
 func newGenericRunner(program string) *_GenericRunner {

@@ -1,12 +1,10 @@
-package runner
+package runners
 
 import (
 	"os/exec"
-
-	"github.com/mniak/bench/domain"
 )
 
-func NewBinaryLoader() domain.RunnerLoader {
+func NewBinaryLoader() RunnerLoader {
 	return &PythonLoader{}
 }
 
@@ -15,7 +13,7 @@ type (
 	_BinaryRunner struct{}
 )
 
-func (r *_BinaryRunner) Run(runnerCmd domain.RunnerCmd) error {
+func (r *_BinaryRunner) Run(runnerCmd RunnerCmd) error {
 	cmd := exec.Command(runnerCmd.Path)
 	cmd.Stdin = runnerCmd.Stdin
 	cmd.Stdout = runnerCmd.Stdout

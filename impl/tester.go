@@ -3,11 +3,11 @@ package impl
 import (
 	"bytes"
 	"fmt"
-	"os/exec"
 	"strings"
 
 	"github.com/andreyvit/diff"
 	"github.com/mniak/bench/domain"
+	"github.com/mniak/bench/runners"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +17,7 @@ type (
 		stdin  *bytes.Buffer
 		stdout *bytes.Buffer
 		stderr *bytes.Buffer
-		cmd    *exec.Cmd
+		cmd    runners.StartedRunnerCmd
 
 		expectedOutput string
 	}
@@ -35,8 +35,8 @@ func (s *_StartedTest) Stderr() *bytes.Buffer {
 	return s.stderr
 }
 
-func (s *_StartedTest) Cmd() *exec.Cmd {
-	return s.cmd
+func (s *_StartedTest) Wait() error {
+	return s.cmd.Wait()
 }
 
 func (s *_StartedTest) ExpectedOutput() string {
@@ -59,12 +59,19 @@ func (t *_BaseTester) Start(test domain.Test) (domain.StartedTest, error) {
 		return &started, err
 	}
 
-	started.cmd = exec.Command(test.Program)
-	started.cmd.Stdin = started.stdin
-	started.cmd.Stdout = started.stdout
-	started.cmd.Stderr = started.stderr
+	runner, err := runners.RunnerFor(test.Program)
+	if err != nil {
+		return nil, err
+	}
 
-	err = started.cmd.Start()
+	cmd := runners.RunnerCmd{
+		Path:   test.Program,
+		Stdin:  started.stdin,
+		Stdout: started.stdout,
+		Stderr: started.stderr,
+	}
+
+	started.cmd, err = runner.Start(cmd)
 	if err != nil {
 		err = errors.Wrap(err, "program start failed")
 	}
@@ -72,7 +79,7 @@ func (t *_BaseTester) Start(test domain.Test) (domain.StartedTest, error) {
 }
 
 func (t *_BaseTester) Wait(started domain.StartedTest) (result domain.TestResult, err error) {
-	err = started.Cmd().Wait()
+	err = started.Wait()
 	if err != nil {
 		err = errors.Wrap(err, "program wait failed")
 		return

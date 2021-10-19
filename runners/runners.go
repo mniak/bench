@@ -1,9 +1,31 @@
-package domain
+package runners
 
 import (
 	"io"
 	"os/exec"
 )
+
+var loaders = []RunnerLoader{
+	NewBinaryLoader(),
+	NewPythonLoader(),
+}
+
+func RunnerFor(filename string) (Runner, error) {
+	for _, loader := range loaders {
+		can := loader.CanRun(filename)
+		if !can {
+			continue
+		}
+		r, err := loader.Load()
+		if err == nil {
+			return r, nil
+		}
+		if err == ErrRunnerNotFound {
+			continue
+		}
+	}
+	return nil, ErrRunnerNotFound
+}
 
 type RunnerLoader interface {
 	Load() (Runner, error)

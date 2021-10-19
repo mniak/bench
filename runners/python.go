@@ -1,19 +1,17 @@
-package runner
+package runners
 
 import (
 	"bytes"
 	"os/exec"
-
-	"github.com/mniak/bench/domain"
 )
 
-func NewPythonLoader() domain.RunnerLoader {
+func NewPythonLoader() RunnerLoader {
 	return &PythonLoader{}
 }
 
 type PythonLoader struct{}
 
-func (l *PythonLoader) Load() (domain.Runner, error) {
+func (l *PythonLoader) Load() (Runner, error) {
 	var buffer bytes.Buffer
 	cmd := exec.Command("python", "--version")
 	cmd.Stdout = &buffer

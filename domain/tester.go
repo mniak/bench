@@ -2,7 +2,6 @@ package domain
 
 import (
 	"bytes"
-	"os/exec"
 )
 
 type (
@@ -15,7 +14,7 @@ type (
 		Stdin() *bytes.Buffer
 		Stdout() *bytes.Buffer
 		Stderr() *bytes.Buffer
-		Cmd() *exec.Cmd
+		Wait() error
 
 		ExpectedOutput() string
 	}
