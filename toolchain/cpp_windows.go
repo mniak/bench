@@ -23,22 +23,21 @@ type _MSVCToolchain struct {
 	verbose bool
 }
 
-func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
-	workingDir, main, err := utils.SplitDirAndProgram(inputpath)
+func (tc *_MSVCToolchain) Build(request domain.BuildRequest) error {
+	workingDir, main, err := utils.SplitDirAndProgram(request.Input)
 	if err != nil {
 		return err
 	}
 
-	outputpath, err = filepath.Abs(outputpath)
+	outputpath, err := filepath.Abs(request.Output)
 	if err != nil {
 		return err
 	}
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
-	if tc.verbose {
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-	}
+	cmd.Stderr = request.Stderr
+	cmd.Stdout = request.Stdout
+
 	cmd.Dir = workingDir
 	cmd.Env = append(cmd.Env, tc.envvars...)
 	err = cmd.Run()

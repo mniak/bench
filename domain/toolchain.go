@@ -1,5 +1,7 @@
 package domain
 
+import "io"
+
 type ToolchainFinder interface {
 	Find(string) (ToolchainLoader, error)
 }
@@ -10,8 +12,15 @@ type ToolchainLoader interface {
 	OutputExtension() string
 }
 
+type BuildRequest struct {
+	Stdout io.Writer
+	Stderr io.Writer
+	Input  string
+	Output string
+}
+
 type Toolchain interface {
-	Build(inputpath, outputpath string) error
+	Build(request BuildRequest) error
 }
 
 type ToolchainFactory func() (Toolchain, error)
