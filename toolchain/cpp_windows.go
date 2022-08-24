@@ -131,32 +131,6 @@ func getVcVars() ([]string, error) {
 
 const pathEnvVarPrefix = "PATH="
 
-func findExe(exe string, paths []string) (string, error) {
-	if paths == nil {
-		paths = strings.Split(os.Getenv("path"), string(os.PathListSeparator))
-	}
-	for _, p := range paths {
-		abs, err := filepath.Abs(p)
-		if err != nil {
-			continue
-		}
-		filename := filepath.Join(abs, exe)
-
-		info, err := os.Stat(filename)
-		if os.IsNotExist(err) {
-			continue
-		}
-		if err != nil {
-			return "", err
-		}
-		if !info.IsDir() {
-			return filename, nil
-		}
-
-	}
-	return "", ErrToolchainNotFound
-}
-
 func MSVCToolchainFactory() (domain.Toolchain, error) {
 	var result _MSVCToolchain
 	var err error
@@ -177,7 +151,7 @@ func MSVCToolchainFactory() (domain.Toolchain, error) {
 		return nil, ErrToolchainNotFound
 	}
 
-	result.clpath, err = findExe("cl.exe", paths)
+	result.clpath, err = findBinaryPath("cl", paths...)
 	if err != nil {
 		return &result, err
 	}
