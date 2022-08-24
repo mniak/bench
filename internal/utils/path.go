@@ -7,7 +7,7 @@ import (
 )
 
 func SplitDirAndProgram(dirOrProgram string) (string, string, error) {
-	full, err := filepath.Abs(dirOrProgram)
+	full, err := filepath.Abs(filepath.Clean(dirOrProgram))
 	if err != nil {
 		return "", "", err
 	}
