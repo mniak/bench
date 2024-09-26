@@ -1,6 +1,8 @@
 package toolchain
 
-import "github.com/mniak/bench/domain"
+import (
+	"github.com/mniak/bench/domain"
+)
 
 type _LoaderFromFactories struct {
 	factories       []domain.ToolchainFactory

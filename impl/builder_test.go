@@ -7,6 +7,7 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
 	"github.com/mniak/bench/internal/mocks"
+	extra "github.com/oxyno-zeta/gomock-extra-matcher"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +33,9 @@ func Test_WhenFindToolchain_ShouldBuild(t *testing.T) {
 		Return(tchain, nil)
 
 	tchain.EXPECT().
-		Build(fakeinputpath, fakeoutputpath).
+		Build(extra.StructMatcher().
+			Field("Input", fakeinputpath).
+			Field("Output", fakeoutputpath)).
 		Return(nil)
 
 	// should build
@@ -66,7 +69,9 @@ func Test_WhenFindToolchain_ButToolchainFailsToBuild_ShouldFailBuildWithTheSameE
 
 	// but toolchain fails to build
 	tchain.EXPECT().
-		Build(fakeinputpath, fakeoutputpath).
+		Build(extra.StructMatcher().
+			Field("Input", fakeinputpath).
+			Field("Output", fakeoutputpath)).
 		Return(failure)
 
 	// should fail build with the same error

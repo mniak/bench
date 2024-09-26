@@ -23,22 +23,21 @@ type _MSVCToolchain struct {
 	verbose bool
 }
 
-func (tc *_MSVCToolchain) Build(inputpath, outputpath string) error {
-	workingDir, main, err := utils.SplitDirAndProgram(inputpath)
+func (tc *_MSVCToolchain) Build(request domain.BuildRequest) error {
+	workingDir, main, err := utils.SplitDirAndProgram(request.Input)
 	if err != nil {
 		return err
 	}
 
-	outputpath, err = filepath.Abs(outputpath)
+	outputpath, err := filepath.Abs(request.Output)
 	if err != nil {
 		return err
 	}
 
 	cmd := exec.Command(tc.clpath, main, "/link", "/out:"+outputpath)
-	if tc.verbose {
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-	}
+	cmd.Stderr = request.Stderr
+	cmd.Stdout = request.Stdout
+
 	cmd.Dir = workingDir
 	cmd.Env = append(cmd.Env, tc.envvars...)
 	err = cmd.Run()
@@ -132,32 +131,6 @@ func getVcVars() ([]string, error) {
 
 const pathEnvVarPrefix = "PATH="
 
-func findExe(exe string, paths []string) (string, error) {
-	if paths == nil {
-		paths = strings.Split(os.Getenv("path"), string(os.PathListSeparator))
-	}
-	for _, p := range paths {
-		abs, err := filepath.Abs(p)
-		if err != nil {
-			continue
-		}
-		filename := filepath.Join(abs, exe)
-
-		info, err := os.Stat(filename)
-		if os.IsNotExist(err) {
-			continue
-		}
-		if err != nil {
-			return "", err
-		}
-		if !info.IsDir() {
-			return filename, nil
-		}
-
-	}
-	return "", ErrToolchainNotFound
-}
-
 func MSVCToolchainFactory() (domain.Toolchain, error) {
 	var result _MSVCToolchain
 	var err error
@@ -178,7 +151,7 @@ func MSVCToolchainFactory() (domain.Toolchain, error) {
 		return nil, ErrToolchainNotFound
 	}
 
-	result.clpath, err = findExe("cl.exe", paths)
+	result.clpath, err = findBinaryPath("cl", paths...)
 	if err != nil {
 		return &result, err
 	}

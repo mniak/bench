@@ -48,6 +48,7 @@ func createProgramFinder() domain.FileFinder {
 func init() {
 	toolchainLoaders := []domain.ToolchainLoader{
 		toolchain.NewCPPLoader(),
+		toolchain.NewGoLoader(),
 	}
 
 	DefaultSourceFinder = createSourceFinder(toolchainLoaders)

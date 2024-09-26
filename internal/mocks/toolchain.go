@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	domain "github.com/mniak/bench/domain"
 )
 
 // MockToolchain is a mock of Toolchain interface.
@@ -34,15 +35,15 @@ func (m *MockToolchain) EXPECT() *MockToolchainMockRecorder {
 }
 
 // Build mocks base method.
-func (m *MockToolchain) Build(arg0, arg1 string) error {
+func (m *MockToolchain) Build(arg0 domain.BuildRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Build", arg0, arg1)
+	ret := m.ctrl.Call(m, "Build", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Build indicates an expected call of Build.
-func (mr *MockToolchainMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockToolchainMockRecorder) Build(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockToolchain)(nil).Build), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockToolchain)(nil).Build), arg0)
 }
