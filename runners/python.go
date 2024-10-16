@@ -10,9 +10,7 @@ func NewPythonRunner() Loader {
 	return &PythonRunner{}
 }
 
-type PythonRunner struct {
-	Teste string `json:"teste"`
-}
+type PythonRunner struct{}
 
 func (py *PythonRunner) Name() string {
 	return "Python"
