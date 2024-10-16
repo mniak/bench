@@ -16,7 +16,7 @@ var testExamplesCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		examples, err := bench.FindExamples(args[0], "examples")
-		handle(err)
+		cobra.CheckErr(err)
 
 		if len(examples) == 0 {
 			fmt.Fprintln(os.Stderr, "No examples found")
@@ -42,8 +42,4 @@ var testExamplesCmd = &cobra.Command{
 			os.Exit(1)
 		}
 	},
-}
-
-func init() {
-	testCmd.AddCommand(testExamplesCmd)
 }
