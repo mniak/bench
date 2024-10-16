@@ -33,7 +33,7 @@ func (bin *BinaryRunner) Start(cmd Cmd) (StartedCmd, error) {
 	c.Stdin = cmd.Stdin
 	c.Stdout = cmd.Stdout
 	c.Stderr = cmd.Stderr
-	err := c.Run()
+	err := c.Start()
 	if err != nil {
 		return nil, err
 	}
