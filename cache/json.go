@@ -5,7 +5,7 @@ import "encoding/json"
 type jsonMarshaler[T any] struct{}
 
 func (jsonMarshaler[T]) Marshal(obj T) ([]byte, error) {
-	return json.Marshal(obj)
+	return json.MarshalIndent(obj, "", "  ")
 }
 
 func (jsonMarshaler[T]) Unmarshal(data []byte) (T, error) {

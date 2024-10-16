@@ -14,7 +14,7 @@ func (fs _FileStore) filename(key string) string {
 }
 
 func (fs _FileStore) Load(key string) ([]byte, error) {
-	data, err := os.ReadFile(key)
+	data, err := os.ReadFile(fs.filename(key))
 
 	if os.IsNotExist(err) {
 		return data, ErrCacheMiss
@@ -23,11 +23,13 @@ func (fs _FileStore) Load(key string) ([]byte, error) {
 }
 
 func (fs _FileStore) Store(key string, data []byte) error {
-	err := os.MkdirAll(fs.filename(key), 0o777)
+	filename := fs.filename(key)
+	parentDir := filepath.Dir(filename)
+	err := os.MkdirAll(parentDir, 0o777)
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(fs.filename(key), data, 0o655)
+	err = os.WriteFile(filename, data, 0o655)
 	return err
 }
 

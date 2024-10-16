@@ -10,37 +10,47 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var testCmd = &cobra.Command{
-	Use:  "test [flags] -- <program> [<arguments>]",
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		testName, err := cmd.Flags().GetString("name")
-		handle(err)
+func testCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:  "test [flags] -- <program> [<arguments>]",
+		Args: cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			testName, err := cmd.Flags().GetString("name")
+			cobra.CheckErr(err)
 
-		input, err := cmd.Flags().GetString("input")
-		handle(err)
+			input, err := cmd.Flags().GetString("input")
+			cobra.CheckErr(err)
 
-		expectedOutput, err := cmd.Flags().GetString("output")
-		handle(err)
+			expectedOutput, err := cmd.Flags().GetString("output")
+			cobra.CheckErr(err)
 
-		if testName != "" {
-			fmt.Printf("Test %s running...\n", testName)
-		} else {
-			fmt.Println("Test running...")
-		}
+			if testName != "" {
+				fmt.Printf("Test %s running...\n", testName)
+			} else {
+				fmt.Println("Test running...")
+			}
 
-		t := domain.Test{
-			Program:        args[0],
-			Input:          input,
-			ExpectedOutput: expectedOutput,
-		}
-		handle(runTest(t, testName))
-	},
+			t := domain.Test{
+				Program:        args[0],
+				Input:          input,
+				ExpectedOutput: expectedOutput,
+			}
+			cobra.CheckErr(runTest(t, testName))
+		},
+	}
+
+	cmd.Flags().StringP("input", "i", "", "Test input")
+	cmd.Flags().StringP("output", "o", "", "Expected test output")
+	cmd.Flags().StringP("name", "n", "", "Test name")
+
+	cmd.MarkFlagRequired("input")
+	cmd.MarkFlagRequired("output")
+	return &cmd
 }
 
 func runTest(test domain.Test, testName string) error {
 	started, err := bench.StartTest(test)
-	handle(err)
+	cobra.CheckErr(err)
 
 	if test.Input != "" {
 		fmt.Println("------------- INPUT -------------")
@@ -81,14 +91,4 @@ func runTest(test domain.Test, testName string) error {
 		fmt.Println("-------------- END --------------")
 	}
 	return nil
-}
-
-func init() {
-	rootCmd.AddCommand(testCmd)
-	testCmd.Flags().StringP("input", "i", "", "Test input")
-	testCmd.Flags().StringP("output", "o", "", "Expected test output")
-	testCmd.Flags().StringP("name", "n", "", "Test name")
-
-	testCmd.MarkFlagRequired("input")
-	testCmd.MarkFlagRequired("output")
 }

@@ -17,7 +17,7 @@ type (
 		stdin  *bytes.Buffer
 		stdout *bytes.Buffer
 		stderr *bytes.Buffer
-		cmd    runners.StartedRunnerCmd
+		cmd    runners.StartedCmd
 
 		expectedOutput string
 	}
@@ -64,7 +64,7 @@ func (t *_BaseTester) Start(test domain.Test) (domain.StartedTest, error) {
 		return nil, err
 	}
 
-	cmd := runners.RunnerCmd{
+	cmd := runners.Cmd{
 		Path:   test.Program,
 		Stdin:  started.stdin,
 		Stdout: started.stdout,

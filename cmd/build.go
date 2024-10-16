@@ -7,13 +7,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// runCmd represents the run command
-var runCmd = &cobra.Command{
-	Use:  "build <folder>",
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		handle(Build(args[0]))
-	},
+func buildCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:  "build <folder>",
+		Args: cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			cobra.CheckErr(Build(args[0]))
+		},
+	}
+
+	return &cmd
 }
 
 func Build(folder string) error {
@@ -22,8 +25,4 @@ func Build(folder string) error {
 		fmt.Println(builtPath)
 	}
 	return err
-}
-
-func init() {
-	rootCmd.AddCommand(runCmd)
 }
