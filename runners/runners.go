@@ -53,7 +53,7 @@ func (list *RunnerList) UnmarshalJSON(b []byte) error {
 	for _, jsonRunner := range jsonList {
 		runnerType, found := knownRunnersMap[jsonRunner.Kind]
 		if !found {
-			log.Println("Runner kind %q not found")
+			log.Printf("Runner kind %q not found", jsonRunner.Kind)
 			continue
 		}
 
