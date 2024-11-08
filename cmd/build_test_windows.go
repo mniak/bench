@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mniak/bench/app"
 	"github.com/mniak/bench/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,10 +33,10 @@ int main() {
 	defer os.RemoveAll(tempdir)
 
 	inputPath := filepath.Join(tempdir, "main.cpp")
-	err = os.WriteFile(inputPath, []byte(sourceCode), 0644)
+	err = os.WriteFile(inputPath, []byte(sourceCode), 0o644)
 	require.NoError(t, err)
 
-	err = Build(tempdir)
+	err = app.Build(tempdir)
 	require.NoError(t, err)
 
 	outputPath := filepath.Join(tempdir, "main"+domain.OSBinaryExtension)

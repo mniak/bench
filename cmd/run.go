@@ -1,8 +1,7 @@
-package cmd
+package main
 
 import (
-	"os"
-
+	"github.com/mniak/bench/app"
 	"github.com/mniak/bench/runners"
 	"github.com/spf13/cobra"
 )
@@ -12,28 +11,11 @@ func runCmd() *cobra.Command {
 		Use:  "run <filename>",
 		Args: cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(Run(args[0], args[1:]...))
+			err := app.Run(args[0], args[1:]...)
+			cobra.CheckErr(err)
 		},
 	}
 	return &cmd
-}
-
-func Run(filename string, args ...string) error {
-	r, err := runners.RunnerFor(filename)
-	if err != nil {
-		return err
-	}
-	cmd, err := r.Start(runners.Cmd{
-		Path:   filename,
-		Args:   args,
-		Stdin:  os.Stdin,
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-	})
-	if err != nil {
-		return err
-	}
-	return cmd.Wait()
 }
 
 func rebuildRunnersCacheCmd() *cobra.Command {

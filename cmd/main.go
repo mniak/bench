@@ -1,10 +1,10 @@
-package cmd
+package main
 
 import (
 	"github.com/spf13/cobra"
 )
 
-func Execute() {
+func main() {
 	rootCmd := &cobra.Command{
 		Use: "bench",
 	}
