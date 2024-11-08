@@ -1,6 +1,6 @@
 package newcore
 
-func AlwaysLoader(r Runner) Loader {
+func AlwaysLoader(r Runner) RunnerLoader {
 	return &_AlwaysLoader{r}
 }
 

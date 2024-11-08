@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func NewPythonLoader() Loader {
+func NewPythonLoader() RunnerLoader {
 	return &_PythonLoader{}
 }
 

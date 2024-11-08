@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var loaders = []Loader{
+var loaders = []RunnerLoader{
 	NewPythonLoader(),
 	NewBinaryLoader(),
 }
