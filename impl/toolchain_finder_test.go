@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -33,7 +32,7 @@ func Test_WhenFilenameHasRunnableExtension_AndSourceExists_ShouldReturnToolchain
 		OutputExtension().
 		Return(ExtRun)
 
-	tempdir, err := ioutil.TempDir("", "test_*")
+	tempdir, err := os.MkdirTemp("", "test_*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempdir)
 
@@ -70,7 +69,7 @@ func Test_WhenFilenameHasRunnableExtension_AndSourceDoesNotExist_ShouldErrorNotF
 		OutputExtension().
 		Return(EXT_RUN)
 
-	tempdir, err := ioutil.TempDir("", "test_*")
+	tempdir, err := os.MkdirTemp("", "test_*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempdir)
 
@@ -101,7 +100,7 @@ func Test_WhenFilenameHasSourceExtension_AndItExists_ShouldReturnToolchain(t *te
 		OutputExtension().
 		Return(EXT_RUN)
 
-	tempdir, err := ioutil.TempDir("", "test_*")
+	tempdir, err := os.MkdirTemp("", "test_*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempdir)
 
@@ -138,7 +137,7 @@ func Test_WhenFilenameHasSourceExtension_AndItDoesNotExist_ShouldReturnToolchain
 		OutputExtension().
 		Return(EXT_RUN)
 
-	tempdir, err := ioutil.TempDir("", "test_*")
+	tempdir, err := os.MkdirTemp("", "test_*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempdir)
 
@@ -171,7 +170,7 @@ func Test_WhenFilenameHasUnknownExtension_AndItExists_ShouldReturnToolchain(t *t
 		OutputExtension().
 		Return(EXT_RUN)
 
-	tempdir, err := ioutil.TempDir("", "test_*")
+	tempdir, err := os.MkdirTemp("", "test_*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempdir)
 
@@ -208,7 +207,7 @@ func Test_WhenFilenameHasUnknownExtension_AndItDoesNotExist_ShouldReturnToolchai
 		OutputExtension().
 		Return(EXT_RUN)
 
-	tempdir, err := ioutil.TempDir("", "test_*")
+	tempdir, err := os.MkdirTemp("", "test_*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempdir)
 
