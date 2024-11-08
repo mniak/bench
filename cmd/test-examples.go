@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/mniak/bench/domain"
-	"github.com/mniak/bench/lib/bench"
+	"github.com/mniak/bench/old_stuff/domain"
+	"github.com/mniak/bench/old_stuff/lib/bench"
 	"github.com/spf13/cobra"
 )
 

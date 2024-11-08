@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mniak/bench/app"
-	"github.com/mniak/bench/domain"
+	"github.com/mniak/bench/old_stuff/domain"
+	"github.com/mniak/bench/old_stuff/lib/bench"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -36,7 +36,7 @@ int main() {
 	err = os.WriteFile(inputPath, []byte(sourceCode), 0o644)
 	require.NoError(t, err)
 
-	err = app.Build(tempdir)
+	_, err = bench.Build(tempdir)
 	require.NoError(t, err)
 
 	outputPath := filepath.Join(tempdir, "main"+domain.OSBinaryExtension)
