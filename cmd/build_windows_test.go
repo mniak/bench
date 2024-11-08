@@ -9,8 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mniak/bench/app"
 	"github.com/mniak/bench/domain"
+	"github.com/mniak/bench/lib/bench"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -36,7 +37,11 @@ int main() {
 	err = os.WriteFile(inputPath, []byte(sourceCode), 0o644)
 	require.NoError(t, err)
 
-	err = app.Build(tempdir)
+	builtPath, err := bench.Build(args[0])
+	cobra.CheckErr(err)
+	if err == nil {
+		fmt.Println(builtPath)
+	}
 	require.NoError(t, err)
 
 	outputPath := filepath.Join(tempdir, "main"+domain.OSBinaryExtension)

@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/mniak/bench/app"
+	"github.com/mniak/bench/runners"
 	"github.com/spf13/cobra"
 )
 
-func runCmd() *cobra.Command {
+func refreshCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:  "run <filename>",
-		Args: cobra.MinimumNArgs(1),
+		Use:   "refresh",
+		Short: "Rebuild runners cache",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := app.Run(args[0], args[1:]...)
+			err := runners.RebuildCache()
 			cobra.CheckErr(err)
 		},
 	}

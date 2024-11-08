@@ -9,7 +9,7 @@ func main() {
 		Use: "bench",
 	}
 	rootCmd.AddCommand(buildCmd())
-	rootCmd.AddCommand(runCmd(), rebuildRunnersCacheCmd())
+	rootCmd.AddCommand(runCmd(), refreshCmd())
 	rootCmd.AddCommand(testCmd())
 
 	rootCmd.Execute()
