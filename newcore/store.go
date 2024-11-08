@@ -1,4 +1,4 @@
-package run
+package newcore
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"reflect"
 
-	"github.com/mniak/bench/cache"
+	"github.com/mniak/bench/pkg/cache"
 	"github.com/pkg/errors"
 )
 

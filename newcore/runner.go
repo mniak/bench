@@ -1,4 +1,4 @@
-package run
+package newcore
 
 import "io"
 

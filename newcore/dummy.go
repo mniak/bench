@@ -1,4 +1,4 @@
-package run
+package newcore
 
 func AlwaysLoader(r Runner) Loader {
 	return &_AlwaysLoader{r}
