@@ -1,4 +1,4 @@
-package runners
+package run
 
 func AlwaysLoader(r Runner) Loader {
 	return &_AlwaysLoader{r}

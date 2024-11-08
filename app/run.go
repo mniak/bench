@@ -3,15 +3,15 @@ package app
 import (
 	"os"
 
-	"github.com/mniak/bench/runners"
+	"github.com/mniak/bench/run"
 )
 
 func Run(filename string, args ...string) error {
-	r, err := runners.RunnerFor(filename)
+	r, err := run.RunnerFor(filename)
 	if err != nil {
 		return err
 	}
-	cmd, err := r.Start(runners.Cmd{
+	cmd, err := r.Start(run.Cmd{
 		Path:   filename,
 		Args:   args,
 		Stdin:  os.Stdin,
@@ -23,5 +23,3 @@ func Run(filename string, args ...string) error {
 	}
 	return cmd.Wait()
 }
-
-

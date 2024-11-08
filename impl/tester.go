@@ -7,7 +7,7 @@ import (
 
 	"github.com/andreyvit/diff"
 	"github.com/mniak/bench/domain"
-	"github.com/mniak/bench/runners"
+	"github.com/mniak/bench/run"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +17,7 @@ type (
 		stdin  *bytes.Buffer
 		stdout *bytes.Buffer
 		stderr *bytes.Buffer
-		cmd    runners.StartedCmd
+		cmd    run.StartedCmd
 
 		expectedOutput string
 	}
@@ -59,12 +59,12 @@ func (t *_BaseTester) Start(test domain.Test) (domain.StartedTest, error) {
 		return &started, err
 	}
 
-	runner, err := runners.RunnerFor(test.Program)
+	runner, err := run.RunnerFor(test.Program)
 	if err != nil {
 		return nil, err
 	}
 
-	cmd := runners.Cmd{
+	cmd := run.Cmd{
 		Path:   test.Program,
 		Stdin:  started.stdin,
 		Stdout: started.stdout,

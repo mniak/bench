@@ -1,4 +1,4 @@
-package runners
+package run
 
 type Loader interface {
 	Name() string
