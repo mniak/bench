@@ -3,6 +3,7 @@ package run
 import (
 	"encoding/json"
 	"log"
+	"os"
 	"os/exec"
 	"reflect"
 
@@ -109,11 +110,15 @@ func Runners() RunnersList {
 
 // RunnerFor tries to find a suitable runner for a specific file
 func RunnerFor(filename string) (Runner, error) {
+	_, err := os.Stat(filename)
+	if err != nil {
+		return nil, err
+	}
 	for _, runner := range Runners() {
 		can := runner.CanRun(filename)
 		if can {
 			return runner, nil
 		}
 	}
-	return nil, errors.New("no suitable runner found")
+	return nil, errors.New("no suitable runner found for file")
 }
