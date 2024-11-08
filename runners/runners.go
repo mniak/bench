@@ -27,9 +27,9 @@ var knownRunnersMap = func() map[string]reflect.Type {
 	return result
 }()
 
-type RunnerList []Runner
+type RunnersList []Runner
 
-func (list RunnerList) MarshalJSON() ([]byte, error) {
+func (list RunnersList) MarshalJSON() ([]byte, error) {
 	var result []any
 	for _, r := range list {
 		v := reflect.ValueOf(r).Elem()
@@ -41,7 +41,7 @@ func (list RunnerList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(result)
 }
 
-func (list *RunnerList) UnmarshalJSON(b []byte) error {
+func (list *RunnersList) UnmarshalJSON(b []byte) error {
 	jsonList := make([]struct {
 		Kind      string          `json:"kind"`
 		RawParams json.RawMessage `json:"params"`
@@ -66,8 +66,8 @@ func (list *RunnerList) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func loadRunners() RunnerList {
-	var runners RunnerList
+func loadRunners() RunnersList {
+	var runners RunnersList
 	for _, loader := range loaders {
 		r, err := loader.Load()
 		if err != nil {
@@ -85,8 +85,8 @@ func RebuildCache() error {
 	return err
 }
 
-func Runners() RunnerList {
-	result, err := cache.JSONCache("runners.json", func() (RunnerList, error) {
+func Runners() RunnersList {
+	result, err := cache.JSONCache("runners.json", func() (RunnersList, error) {
 		runners := loadRunners()
 		return runners, nil
 	})
