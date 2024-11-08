@@ -4,32 +4,40 @@ import (
 	"bytes"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 )
 
-func NewPythonRunner() Loader {
-	return &PythonRunner{}
+func NewPythonLoader() Loader {
+	return &_PythonLoader{}
 }
 
-type PythonRunner struct{}
+type _PythonLoader struct{}
 
-func (py *PythonRunner) Name() string {
+func (py *_PythonLoader) Name() string {
 	return "Python"
 }
 
-func (py *PythonRunner) Load() (Runner, error) {
+func (py *_PythonLoader) LoadRunner() (Runner, error) {
 	var buffer bytes.Buffer
 	cmd := exec.Command("python", "--version")
 	cmd.Stdout = &buffer
 
 	err := cmd.Run()
 	if err != nil {
-		return nil, ErrRunnerNotFound
+		return nil, errors.New("runner not loaded: python not found")
 	}
 
-	return py, nil
+	return new(_PythonRunner), nil
 }
 
-func (py *PythonRunner) CanRun(filename string) bool {
+type _PythonRunner struct{}
+
+func (py *_PythonRunner) Name() string {
+	return "Python"
+}
+
+func (py *_PythonRunner) CanRun(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch extension {
 	case ".py":
@@ -39,7 +47,7 @@ func (py *PythonRunner) CanRun(filename string) bool {
 	}
 }
 
-func (py *PythonRunner) Start(cmd Cmd) (StartedCmd, error) {
+func (py *_PythonRunner) Start(cmd Cmd) (StartedCmd, error) {
 	args := append([]string{cmd.Path}, cmd.Args...)
 	c := exec.Command("python", args...)
 	c.Stdin = cmd.Stdin

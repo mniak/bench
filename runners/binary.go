@@ -10,8 +10,24 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func NewBinaryRunner() *BinaryRunner {
-	return &BinaryRunner{}
+func NewBinaryLoader() *BinaryLoader {
+	return &BinaryLoader{}
+}
+
+type BinaryLoader struct{}
+
+func (bin *BinaryLoader) Name() string {
+	return "Binary"
+}
+
+func (bin *BinaryLoader) LoadRunner() (Runner, error) {
+	var runner BinaryRunner
+	if runtime.GOOS == "windows" {
+		pathext := os.Getenv("PATHEXT")
+		extensions := strings.Split(strings.ToUpper(pathext), ";")
+		runner.Extensions = extensions
+	}
+	return &runner, nil
 }
 
 type BinaryRunner struct {
@@ -20,15 +36,6 @@ type BinaryRunner struct {
 
 func (bin *BinaryRunner) Name() string {
 	return "Binary"
-}
-
-func (bin *BinaryRunner) Load() (Runner, error) {
-	if runtime.GOOS == "windows" {
-		pathext := os.Getenv("PATHEXT")
-		extensions := strings.Split(strings.ToUpper(pathext), ";")
-		bin.Extensions = extensions
-	}
-	return bin, nil
 }
 
 func (bin *BinaryRunner) CanRun(filename string) bool {
