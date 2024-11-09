@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"reflect"
 
-	"github.com/mniak/bench/cache"
+	"github.com/mniak/bench/pkg/cache"
 )
 
 var loaders = []Loader{

@@ -1,10 +1,7 @@
 package newcore
 
+// func
 
-func 
+type _GoCompiler struct{}
 
-type _GoCompiler struct {
-	
-}
-
-func _GoCompiler str
+// func _GoCompiler str

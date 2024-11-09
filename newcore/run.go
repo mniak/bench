@@ -1,6 +1,8 @@
 package newcore
 
-import "io"
+import (
+	"io"
+)
 
 type Runner interface {
 	Name() string

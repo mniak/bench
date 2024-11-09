@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/andreyvit/diff"
+	"github.com/mniak/bench/newcore"
 	"github.com/mniak/bench/old_stuff/domain"
-	"github.com/mniak/bench/run"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +17,7 @@ type (
 		stdin  *bytes.Buffer
 		stdout *bytes.Buffer
 		stderr *bytes.Buffer
-		cmd    run.StartedCmd
+		cmd    newcore.StartedCmd
 
 		expectedOutput string
 	}
@@ -59,12 +59,12 @@ func (t *_BaseTester) Start(test domain.Test) (domain.StartedTest, error) {
 		return &started, err
 	}
 
-	runner, err := run.RunnerFor(test.Program)
+	runner, err := newcore.RunnerFor(test.Program)
 	if err != nil {
 		return nil, err
 	}
 
-	cmd := run.Cmd{
+	cmd := newcore.Cmd{
 		Path:   test.Program,
 		Stdin:  started.stdin,
 		Stdout: started.stdout,
