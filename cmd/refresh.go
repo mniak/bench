@@ -13,7 +13,7 @@ func refreshCmd() *cobra.Command {
 		Short: "Rebuild runners cache",
 		Run: func(cmd *cobra.Command, args []string) {
 			list, err := newcore.RebuildCache()
-			fmt.Printf("%d run detected:\n", len(list))
+			fmt.Printf("%d runners detected:\n", len(list))
 			for _, runner := range list {
 				fmt.Printf(" - %s\n", runner.Name())
 			}

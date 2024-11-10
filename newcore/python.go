@@ -18,20 +18,36 @@ func (py *_PythonLoader) Name() string {
 	return "Python"
 }
 
-func (py *_PythonLoader) LoadRunner() (Runner, error) {
+func testProgram(program string, moreArgs ...string) error {
 	var buffer bytes.Buffer
-	cmd := exec.Command("python", "--version")
+	cmd := exec.Command(program, moreArgs...)
 	cmd.Stdout = &buffer
 
 	err := cmd.Run()
 	if err != nil {
-		return nil, errors.New("runner not loaded: python not found")
+		return errors.New("not found")
 	}
 
-	return new(_PythonRunner), nil
+	return nil
 }
 
-type _PythonRunner struct{}
+func (py *_PythonLoader) LoadRunner() (Runner, error) {
+	var runner _PythonRunner
+	for _, program := range []string{
+		"python3", "python",
+	} {
+		err := testProgram(program, "--version")
+		if err == nil {
+			runner.programName = program
+			return &runner, nil
+		}
+	}
+	return nil, errors.New("runner not loaded: python not found")
+}
+
+type _PythonRunner struct {
+	programName string
+}
 
 func (py *_PythonRunner) Name() string {
 	return "Python"
