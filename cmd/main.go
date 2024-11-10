@@ -5,12 +5,13 @@ import (
 )
 
 func main() {
-	rootCmd := &cobra.Command{
+	cmd := &cobra.Command{
 		Use: "bench",
 	}
-	rootCmd.AddCommand(buildCmd())
-	rootCmd.AddCommand(runCmd(), refreshCmd())
-	rootCmd.AddCommand(testCmd())
+	cmd.AddCommand(refreshCmd())
+	cmd.AddCommand(runCmd())
+	cmd.AddCommand(compileCmd())
+	cmd.AddCommand(testCmd())
 
-	rootCmd.Execute()
+	cmd.Execute()
 }

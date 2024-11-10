@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -28,6 +29,10 @@ func (bin *BinaryLoader) LoadRunner() (Runner, error) {
 		runner.Extensions = extensions
 	}
 	return &runner, nil
+}
+
+func (bin *BinaryLoader) RunnerType() reflect.Type {
+	return reflect.TypeOf(BinaryRunner{})
 }
 
 type BinaryRunner struct {

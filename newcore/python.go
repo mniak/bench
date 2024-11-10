@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 
 	"github.com/pkg/errors"
 )
-
-func NewPythonLoader() RunnerLoader {
-	return &_PythonLoader{}
-}
 
 type _PythonLoader struct{}
 
@@ -38,15 +35,19 @@ func (py *_PythonLoader) LoadRunner() (Runner, error) {
 	} {
 		err := testProgram(program, "--version")
 		if err == nil {
-			runner.programName = program
+			runner.Command = program
 			return &runner, nil
 		}
 	}
 	return nil, errors.New("runner not loaded: python not found")
 }
 
+func (py *_PythonLoader) RunnerType() reflect.Type {
+	return reflect.TypeOf(_PythonLoader{})
+}
+
 type _PythonRunner struct {
-	programName string
+	Command string
 }
 
 func (py *_PythonRunner) Name() string {

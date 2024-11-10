@@ -2,6 +2,7 @@ package newcore
 
 import (
 	"io"
+	"os/exec"
 )
 
 type Runner interface {
@@ -32,4 +33,14 @@ type Cmd struct {
 	Stdin  io.Reader
 	Stdout io.Writer
 	Stderr io.Writer
+}
+
+type _StartedRunnerCmd struct {
+	cmd *exec.Cmd
+}
+
+func newStartedRunnerCmd(cmd *exec.Cmd) *_StartedRunnerCmd {
+	return &_StartedRunnerCmd{
+		cmd: cmd,
+	}
 }

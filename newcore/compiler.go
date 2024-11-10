@@ -1,20 +1,30 @@
 package newcore
 
-import "os"
+import (
+	"io"
+	"os"
+)
 
 type Compiler interface {
 	Name() string
-	Build() (*Artifact, error)
+	SupportsFile(filename string) bool
+	Compile(input CompilerInput) (*Artifact, error)
+}
+type CompilerInput struct {
+	Filename string
+	Stdin    io.Reader
+	Stdout   io.Writer
+	Stderr   io.Writer
 }
 
 type Artifact struct {
-	filename string
+	OutputFilename string
 }
 
 func (a *Artifact) Filename() string {
-	return a.filename
+	return a.OutputFilename
 }
 
 func (a *Artifact) Free() error {
-	return os.RemoveAll(a.filename)
+	return os.RemoveAll(a.OutputFilename)
 }
