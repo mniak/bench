@@ -1,12 +1,12 @@
 package newcore
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
-
-	"github.com/pkg/errors"
+	"strings"
 )
 
 type _GoLoader struct{}
@@ -41,22 +41,35 @@ func (g *_GoCompiler) findRoot(filename string) (string, bool) {
 }
 
 func (g *_GoCompiler) Compile(input CompilerInput) (*Artifact, error) {
-	dir, found := g.findRoot(input.Filename)
-	if !found {
-		return nil, errors.New("could not find project root")
-	}
+	// dir, found := g.findRoot(input.Filename)
+	// if !found {
+	// 	return nil, errors.New("could not find project root")
+	// }
 
-	outFile, err := os.CreateTemp("", "program*.exe")
+	newWorkingDir := filepath.Dir(input.Filename)
+
+	inputFilename, err := filepath.Rel(newWorkingDir, input.Filename)
 	if err != nil {
 		return nil, err
 	}
-	defer os.Remove(outFile.Name())
 
-	cmd := exec.Command("go", "build", "-o", outFile.Name(), input.Filename)
-	cmd.Dir = dir
+	outputFilename, err := filepath.Abs(input.OutputFilename)
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := exec.Command(
+		"go", "build",
+		"-o", outputFilename,
+		inputFilename,
+	)
+	// cmd.Dir = dir
+	cmd.Dir = newWorkingDir
 	cmd.Stdin = input.Stdin
 	cmd.Stdout = input.Stdout
 	cmd.Stderr = input.Stderr
+
+	fmt.Println("Go Command:", strings.Join(cmd.Args, " "))
 
 	err = cmd.Run()
 	if err != nil {
@@ -69,7 +82,7 @@ func (g *_GoCompiler) Compile(input CompilerInput) (*Artifact, error) {
 func (g *_GoCompiler) SupportsFile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch extension {
-	case ".py":
+	case ".go":
 		return true
 	default:
 		return false

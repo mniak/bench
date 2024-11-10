@@ -113,7 +113,7 @@ func (list CompilersList) MarshalJSON() ([]byte, error) {
 func (list *CompilersList) UnmarshalJSON(b []byte) error {
 	known := make(map[string]reflect.Type)
 	for _, l := range compilerLoaders {
-		known[l.Name()] = l.CompilerType().Elem()
+		known[l.Name()] = l.CompilerType()
 	}
 
 	result, err := UnmarshalNamedList[Compiler](known, b)
