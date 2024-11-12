@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/mniak/bench/old_stuff/domain"
 	"github.com/mniak/bench/old_stuff/lib/bench"
 	"github.com/spf13/cobra"
 )
@@ -26,7 +25,7 @@ var testExamplesCmd = &cobra.Command{
 		for _, ex := range examples {
 			fmt.Printf("Test %s running...\n", ex.Name)
 
-			t := domain.Test{
+			t := Test{
 				Program:        args[0],
 				Input:          ex.Input,
 				ExpectedOutput: ex.ExpectedOutput,

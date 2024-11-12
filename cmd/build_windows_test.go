@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mniak/bench/old_stuff/domain"
 	"github.com/mniak/bench/old_stuff/lib/bench"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,7 +38,7 @@ int main() {
 	_, err = bench.Build(tempdir)
 	require.NoError(t, err)
 
-	outputPath := filepath.Join(tempdir, "main"+domain.OSBinaryExtension)
+	outputPath := filepath.Join(tempdir, "main"+OSBinaryExtension)
 	assert.FileExists(t, outputPath)
 
 	var stdout bytes.Buffer
