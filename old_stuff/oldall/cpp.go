@@ -1,4 +1,4 @@
-package toolchain
+package oldall
 
 var cppToolchainFactories = make([]ToolchainFactory, 0)
 

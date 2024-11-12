@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/mniak/bench/old_stuff/lib/bench"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +13,7 @@ var testExamplesCmd = &cobra.Command{
 	Aliases: []string{"ex"},
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		examples, err := bench.FindExamples(args[0], "examples")
+		examples, err := oldall.FindExamples(args[0], "examples")
 		cobra.CheckErr(err)
 
 		if len(examples) == 0 {
@@ -24,7 +23,7 @@ var testExamplesCmd = &cobra.Command{
 		var testResults error
 		for _, ex := range examples {
 			fmt.Printf("Test %s running...\n", ex.Name)
-
+			oldalloldall
 			t := Test{
 				Program:        args[0],
 				Input:          ex.Input,

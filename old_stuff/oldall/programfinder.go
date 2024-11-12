@@ -1,4 +1,4 @@
-package bench
+package oldall
 
 import "github.com/mniak/bench/old_stuff/impl"
 

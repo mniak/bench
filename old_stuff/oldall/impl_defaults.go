@@ -6,14 +6,7 @@ import (
 	"github.com/mniak/bench/old_stuff/toolchain"
 )
 
-var (
-	DefaultSourceFinder    FileFinder
-	DefaultProgramFinder   FileFinder
-	DefaultToolchainFinder ToolchainFinder
-
-	DefaultBuilder Builder
-	DefaultTester  Tester
-)
+var DefaultSourceFinder FileFinder
 
 func createSourceFinder(toolchainLoaders []ToolchainLoader) FileFinder {
 	filenames := []string{"main"}
