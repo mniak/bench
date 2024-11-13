@@ -67,7 +67,7 @@ func (list RunnersList) MarshalJSON() ([]byte, error) {
 func (list *RunnersList) UnmarshalJSON(b []byte) error {
 	known := make(map[string]reflect.Type)
 	for _, l := range runnerLoaders {
-		known[l.Name()] = l.RunnerType().Elem()
+		known[l.Name()] = l.RunnerType()
 	}
 
 	result, err := UnmarshalNamedList[Runner](known, b)

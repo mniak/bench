@@ -1,10 +1,6 @@
 package oldall
 
-import (
-	"github.com/mniak/bench/old_stuff/impl"
-)
-
-var DefaultTester = impl.DefaultTester
+var DefaultTester = oldall.DefaultTester
 
 func StartTest(t Test) (started StartedTest, err error) {
 	return DefaultTester.Start(t)

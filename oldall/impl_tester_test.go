@@ -11,7 +11,7 @@ import (
 func TestTest(t *testing.T) {
 	sentence := gofakeit.Sentence(5)
 
-	test := Test{
+	test := oldall.Test{
 		Program:        "cat",
 		Input:          sentence,
 		ExpectedOutput: sentence,

@@ -11,7 +11,7 @@ func main() {
 	cmd.AddCommand(refreshCmd())
 	cmd.AddCommand(runCmd())
 	cmd.AddCommand(compileCmd())
-	cmd.AddCommand(testCmd())
+	// cmd.AddCommand(testCmd())
 
 	cmd.Execute()
 }

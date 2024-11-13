@@ -43,7 +43,7 @@ func (py *_PythonLoader) LoadRunner() (Runner, error) {
 }
 
 func (py *_PythonLoader) RunnerType() reflect.Type {
-	return reflect.TypeOf(_PythonLoader{})
+	return reflect.TypeOf(_PythonRunner{})
 }
 
 type _PythonRunner struct {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mniak/bench/old_stuff/lib/bench"
+	"github.com/mniak/bench/newcore"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,7 @@ func testCmd() *cobra.Command {
 				fmt.Println("Test running...")
 			}
 
-			t := Test{
+			t := newcore.Test{
 				Program:        args[0],
 				Input:          input,
 				ExpectedOutput: expectedOutput,
@@ -47,8 +47,8 @@ func testCmd() *cobra.Command {
 	return &cmd
 }
 
-func runTest(test Test, testName string) error {
-	started, err := bench.StartTest(test)
+func runTest(test newcore.Test, testName string) error {
+	started, err := newcore.StartTest(test)
 	cobra.CheckErr(err)
 
 	if test.Input != "" {
@@ -56,7 +56,7 @@ func runTest(test Test, testName string) error {
 		fmt.Println(test.Input)
 	}
 
-	r, err := bench.WaitTest(started)
+	r, err := newcore.WaitTest(started)
 
 	if r.Output != "" {
 		fmt.Println("------------- OUTPUT ------------")
