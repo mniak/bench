@@ -9,11 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type _PythonLoader struct{}
-
-func (py *_PythonLoader) Name() string {
-	return "Python"
-}
+type PythonLoader struct{}
 
 func testProgram(program string, moreArgs ...string) error {
 	var buffer bytes.Buffer
@@ -28,7 +24,7 @@ func testProgram(program string, moreArgs ...string) error {
 	return nil
 }
 
-func (py *_PythonLoader) Load() (Toolchain, error) {
+func (py *PythonLoader) Load() (Toolchain, error) {
 	var toolchain _PythonToolchain
 	for _, program := range []string{
 		"python3", "python",
@@ -42,7 +38,7 @@ func (py *_PythonLoader) Load() (Toolchain, error) {
 	return nil, errors.New("toolchain not loaded: python not found")
 }
 
-func (py *_PythonLoader) ToolchainType() reflect.Type {
+func (py *PythonLoader) ToolchainType() reflect.Type {
 	return reflect.TypeOf(_PythonToolchain{})
 }
 

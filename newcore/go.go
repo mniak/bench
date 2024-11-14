@@ -9,27 +9,23 @@ import (
 	"strings"
 )
 
-type _GoLoader struct{}
+type GoLoader struct{}
 
-func (l *_GoLoader) Name() string {
+func (l *GoLoader) Load() (Toolchain, error) {
+	return &_GoToolchain{}, nil
+}
+
+func (l *GoLoader) ToolchainType() reflect.Type {
+	return reflect.TypeOf(_GoToolchain{})
+}
+
+type _GoToolchain struct{}
+
+func (g *_GoToolchain) Name() string {
 	return "Go"
 }
 
-func (l *_GoLoader) LoadCompiler() (Compiler, error) {
-	return &_GoCompiler{}, nil
-}
-
-func (l *_GoLoader) CompilerType() reflect.Type {
-	return reflect.TypeOf(_GoCompiler{})
-}
-
-type _GoCompiler struct{}
-
-func (g *_GoCompiler) Name() string {
-	return "Go"
-}
-
-func (g *_GoCompiler) findRoot(filename string) (string, bool) {
+func (g *_GoToolchain) findRoot(filename string) (string, bool) {
 	info, err := os.Stat(filename)
 	if err != nil {
 		return "", false
@@ -40,7 +36,7 @@ func (g *_GoCompiler) findRoot(filename string) (string, bool) {
 	return "", false
 }
 
-func (g *_GoCompiler) Compile(input CompilerInput) (*Artifact, error) {
+func (g *_GoToolchain) Compile(input CompilerInput) (*Artifact, error) {
 	// dir, found := g.findRoot(input.Filename)
 	// if !found {
 	// 	return nil, errors.New("could not find project root")
@@ -79,7 +75,7 @@ func (g *_GoCompiler) Compile(input CompilerInput) (*Artifact, error) {
 	return &Artifact{}, nil
 }
 
-func (g *_GoCompiler) CanCompile(filename string) bool {
+func (g *_GoToolchain) CanCompile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch extension {
 	case ".go":

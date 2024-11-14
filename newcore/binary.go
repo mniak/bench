@@ -17,10 +17,6 @@ func NewBinaryLoader() *BinaryLoader {
 
 type BinaryLoader struct{}
 
-func (bin *BinaryLoader) Name() string {
-	return "Binary"
-}
-
 func (bin *BinaryLoader) Load() (Toolchain, error) {
 	var toolchain BinaryToolchain
 	if runtime.GOOS == "windows" {

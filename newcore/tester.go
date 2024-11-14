@@ -2,6 +2,11 @@ package newcore
 
 import (
 	"bytes"
+	"fmt"
+	"strings"
+
+	"github.com/andreyvit/diff"
+	"github.com/pkg/errors"
 )
 
 type (
@@ -85,4 +90,23 @@ func (s *_StartedTest) Wait() error {
 
 func (s *_StartedTest) ExpectedOutput() string {
 	return s.expectedOutput
+}
+
+func WaitTest(t StartedTest) (result TestResult, err error) {
+	err = t.Wait()
+	if err != nil {
+		err = errors.Wrap(err, "program wait failed")
+		return
+	}
+
+	result.Output = t.Stdout().String()
+	result.ErrorOutput = t.Stderr().String()
+
+	if strings.Compare(t.ExpectedOutput(), result.Output) != 0 {
+		err = fmt.Errorf("output expectation not satisfied\n%s",
+			diff.LineDiff(t.ExpectedOutput(), result.Output),
+		)
+		return
+	}
+	return
 }

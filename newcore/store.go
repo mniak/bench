@@ -11,20 +11,18 @@ import (
 )
 
 type ToolchainLoader interface {
-	Name() string
+	// Name() string
 	Load() (Toolchain, error)
 	ToolchainType() reflect.Type
 }
 
 type Toolchain interface {
 	Name() string
-	// CanRun(filename string) bool
-	// CanCompile(filename string) bool
-	// Compile(input ToolchainInput) (*Artifact, error)
 }
 
 var toolchainLoaders = []ToolchainLoader{
-	new(_PythonLoader),
+	new(GoLoader),
+	new(PythonLoader),
 	new(BinaryLoader),
 }
 
@@ -40,7 +38,7 @@ func MarshalNamedList[T Named](list []T) ([]byte, error) {
 	for _, r := range list {
 		v := reflect.ValueOf(r).Elem()
 		result = append(result, map[string]any{
-			"kind":   r.Name(),
+			"name":   v.Type().Name(),
 			"params": v.Interface(),
 		})
 	}
@@ -49,7 +47,7 @@ func MarshalNamedList[T Named](list []T) ([]byte, error) {
 
 func UnmarshalNamedList[T Named](known map[string]reflect.Type, b []byte) ([]T, error) {
 	jsonList := make([]struct {
-		Kind      string          `json:"kind"`
+		Type      string          `json:"name"`
 		RawParams json.RawMessage `json:"params"`
 	}, 0)
 	if err := json.Unmarshal(b, &jsonList); err != nil {
@@ -58,9 +56,9 @@ func UnmarshalNamedList[T Named](known map[string]reflect.Type, b []byte) ([]T, 
 
 	var list []T
 	for _, item := range jsonList {
-		type_, found := known[item.Kind]
+		type_, found := known[item.Type]
 		if !found {
-			log.Printf("Kind %q not found", item.Kind)
+			log.Printf("Type %q not found", item.Type)
 			continue
 		}
 
@@ -80,7 +78,8 @@ func (list ToolchainsList) MarshalJSON() ([]byte, error) {
 func (list *ToolchainsList) UnmarshalJSON(b []byte) error {
 	known := make(map[string]reflect.Type)
 	for _, l := range toolchainLoaders {
-		known[l.Name()] = l.ToolchainType()
+		t := l.ToolchainType()
+		known[t.Name()] = t
 	}
 
 	result, err := UnmarshalNamedList[Toolchain](known, b)
@@ -103,12 +102,13 @@ func RebuildCache() (ToolchainsList, error) {
 func loadToolchains() ToolchainsList {
 	var toolchains ToolchainsList
 	for _, loader := range toolchainLoaders {
+		loaderTypeName := reflect.TypeOf(loader).Elem().Name()
 		r, err := loader.Load()
 		if err != nil {
-			log.Printf("Failed to load toolchain %q", loader.Name())
+			log.Printf("Failed to load toolchain %T", loaderTypeName)
 			continue
 		}
-		log.Printf("Toolchain %q loaded", loader.Name())
+		log.Printf("Toolchain %s loaded", loaderTypeName)
 		toolchains = append(toolchains, r)
 	}
 	return toolchains
