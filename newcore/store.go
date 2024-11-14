@@ -164,21 +164,21 @@ func CompilerFor(filename string) (Compiler, error) {
 	return nil, errors.New("no suitable compiler found for file")
 }
 
-// FinderFor tries to find a suitable finder for a specific file
-func FinderFor(filename string) (Finder, error) {
-	_, err := os.Stat(filename)
-	if err != nil {
-		return nil, err
-	}
-	for _, toolchain := range Toolchains() {
-		finder, ok := toolchain.(Finder)
-		if !ok {
-			continue
-		}
-		can := finder.CanCompile(filename)
-		if can {
-			return finder, nil
-		}
-	}
-	return nil, errors.New("no suitable finder found for file")
-}
+// // FinderFor tries to find a suitable finder for a specific file
+// func FinderFor(filename string) (Finder, error) {
+// 	_, err := os.Stat(filename)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	for _, toolchain := range Toolchains() {
+// 		finder, ok := toolchain.(Finder)
+// 		if !ok {
+// 			continue
+// 		}
+// 		can := finder.CanCompile(filename)
+// 		if can {
+// 			return finder, nil
+// 		}
+// 	}
+// 	return nil, errors.New("no suitable finder found for file")
+// }
