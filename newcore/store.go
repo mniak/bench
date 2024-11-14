@@ -11,14 +11,16 @@ import (
 )
 
 type ToolchainLoader interface {
-	// Name() string
 	Load() (Toolchain, error)
 	ToolchainType() reflect.Type
 }
 
-type Toolchain interface {
-	Name() string
-}
+type (
+	ToolchainsList []Toolchain
+	Toolchain      interface {
+		Name() string
+	}
+)
 
 var toolchainLoaders = []ToolchainLoader{
 	new(GoLoader),
@@ -26,14 +28,7 @@ var toolchainLoaders = []ToolchainLoader{
 	new(BinaryLoader),
 }
 
-type (
-	ToolchainsList []Toolchain
-	Named          interface {
-		Name() string
-	}
-)
-
-func MarshalNamedList[T Named](list []T) ([]byte, error) {
+func MarshalList[T any](list []T) ([]byte, error) {
 	var result []any
 	for _, r := range list {
 		v := reflect.ValueOf(r).Elem()
@@ -45,7 +40,7 @@ func MarshalNamedList[T Named](list []T) ([]byte, error) {
 	return json.Marshal(result)
 }
 
-func UnmarshalNamedList[T Named](known map[string]reflect.Type, b []byte) ([]T, error) {
+func UnmarshalList[T any](known map[string]reflect.Type, b []byte) ([]T, error) {
 	jsonList := make([]struct {
 		Type      string          `json:"name"`
 		RawParams json.RawMessage `json:"params"`
@@ -72,7 +67,7 @@ func UnmarshalNamedList[T Named](known map[string]reflect.Type, b []byte) ([]T, 
 }
 
 func (list ToolchainsList) MarshalJSON() ([]byte, error) {
-	return MarshalNamedList[Toolchain](list)
+	return MarshalList[Toolchain](list)
 }
 
 func (list *ToolchainsList) UnmarshalJSON(b []byte) error {
@@ -82,7 +77,7 @@ func (list *ToolchainsList) UnmarshalJSON(b []byte) error {
 		known[t.Name()] = t
 	}
 
-	result, err := UnmarshalNamedList[Toolchain](known, b)
+	result, err := UnmarshalList[Toolchain](known, b)
 	if err != nil {
 		return err
 	}
@@ -126,17 +121,26 @@ func Toolchains() ToolchainsList {
 	return result
 }
 
+func iterateToolchains[T Toolchain](yield func(T) bool) {
+	for _, toolchain := range Toolchains() {
+		typed, ok := toolchain.(T)
+		if !ok {
+			continue
+		}
+		end := yield(typed)
+		if end {
+			return
+		}
+	}
+}
+
 // RunnerFor tries to find a suitable runner for a specific file
 func RunnerFor(filename string) (Runner, error) {
 	_, err := os.Stat(filename)
 	if err != nil {
 		return nil, err
 	}
-	for _, toolchain := range Toolchains() {
-		runner, ok := toolchain.(Runner)
-		if !ok {
-			continue
-		}
+	for runner := range iterateToolchains[Runner] {
 		can := runner.CanRun(filename)
 		if can {
 			return runner, nil
@@ -151,11 +155,7 @@ func CompilerFor(filename string) (Compiler, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, toolchain := range Toolchains() {
-		compiler, ok := toolchain.(Compiler)
-		if !ok {
-			continue
-		}
+	for compiler := range iterateToolchains[Compiler] {
 		can := compiler.CanCompile(filename)
 		if can {
 			return compiler, nil
@@ -163,22 +163,3 @@ func CompilerFor(filename string) (Compiler, error) {
 	}
 	return nil, errors.New("no suitable compiler found for file")
 }
-
-// // FinderFor tries to find a suitable finder for a specific file
-// func FinderFor(filename string) (Finder, error) {
-// 	_, err := os.Stat(filename)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	for _, toolchain := range Toolchains() {
-// 		finder, ok := toolchain.(Finder)
-// 		if !ok {
-// 			continue
-// 		}
-// 		can := finder.CanCompile(filename)
-// 		if can {
-// 			return finder, nil
-// 		}
-// 	}
-// 	return nil, errors.New("no suitable finder found for file")
-// }

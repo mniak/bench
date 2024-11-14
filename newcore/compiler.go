@@ -6,6 +6,7 @@ import (
 )
 
 type Compiler interface {
+	Toolchain
 	CanCompile(filename string) bool
 	Compile(input CompilerInput) (*Artifact, error)
 }

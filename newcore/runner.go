@@ -6,6 +6,7 @@ import (
 )
 
 type Runner interface {
+	Toolchain
 	CanRun(filename string) bool
 	Start(cmd Cmd) (StartedCmd, error)
 }

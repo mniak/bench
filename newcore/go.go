@@ -37,11 +37,6 @@ func (g *_GoToolchain) findRoot(filename string) (string, bool) {
 }
 
 func (g *_GoToolchain) Compile(input CompilerInput) (*Artifact, error) {
-	// dir, found := g.findRoot(input.Filename)
-	// if !found {
-	// 	return nil, errors.New("could not find project root")
-	// }
-
 	newWorkingDir := filepath.Dir(input.Filename)
 
 	inputFilename, err := filepath.Rel(newWorkingDir, input.Filename)
