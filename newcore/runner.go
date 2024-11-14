@@ -3,16 +3,9 @@ package newcore
 import (
 	"io"
 	"os/exec"
-	"reflect"
 )
 
-type RunnerLoader interface {
-	Name() string
-	LoadRunner() (Runner, error)
-	RunnerType() reflect.Type
-}
 type Runner interface {
-	Name() string
 	CanRun(filename string) bool
 	Start(cmd Cmd) (StartedCmd, error)
 }

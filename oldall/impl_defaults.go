@@ -47,10 +47,10 @@ func init() {
 	DefaultProgramFinder = createProgramFinder()
 	DefaultToolchainFinder = NewToolchainFinderFromToolchainLoaders(toolchainLoaders...)
 
-	DefaultBuilder = WrapBuilderWithFileFinder(
-		NewBuilder(DefaultToolchainFinder),
-		DefaultSourceFinder,
-	)
+	// DefaultBuilder = WrapBuilderWithFileFinder(
+	// 	NewBuilder(DefaultToolchainFinder),
+	// 	DefaultSourceFinder,
+	// )
 
 	DefaultTester = WrapTesterWithFileFinder(
 		WrapTesterWithBuilder(

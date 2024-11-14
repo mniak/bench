@@ -3,17 +3,10 @@ package newcore
 import (
 	"io"
 	"os"
-	"reflect"
 )
 
-type CompilerLoader interface {
-	Name() string
-	LoadCompiler() (Compiler, error)
-	CompilerType() reflect.Type
-}
 type Compiler interface {
-	Name() string
-	SupportsFile(filename string) bool
+	CanCompile(filename string) bool
 	Compile(input CompilerInput) (*Artifact, error)
 }
 type CompilerInput struct {

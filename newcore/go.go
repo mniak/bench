@@ -79,7 +79,7 @@ func (g *_GoCompiler) Compile(input CompilerInput) (*Artifact, error) {
 	return &Artifact{}, nil
 }
 
-func (g *_GoCompiler) SupportsFile(filename string) bool {
+func (g *_GoCompiler) CanCompile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch extension {
 	case ".go":

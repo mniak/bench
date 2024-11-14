@@ -21,29 +21,29 @@ func (bin *BinaryLoader) Name() string {
 	return "Binary"
 }
 
-func (bin *BinaryLoader) LoadRunner() (Runner, error) {
-	var runner BinaryRunner
+func (bin *BinaryLoader) Load() (Toolchain, error) {
+	var toolchain BinaryToolchain
 	if runtime.GOOS == "windows" {
 		pathext := os.Getenv("PATHEXT")
 		extensions := strings.Split(strings.ToUpper(pathext), ";")
-		runner.Extensions = extensions
+		toolchain.Extensions = extensions
 	}
-	return &runner, nil
+	return &toolchain, nil
 }
 
-func (bin *BinaryLoader) RunnerType() reflect.Type {
-	return reflect.TypeOf(BinaryRunner{})
+func (bin *BinaryLoader) ToolchainType() reflect.Type {
+	return reflect.TypeOf(BinaryToolchain{})
 }
 
-type BinaryRunner struct {
+type BinaryToolchain struct {
 	Extensions []string
 }
 
-func (bin *BinaryRunner) Name() string {
+func (bin *BinaryToolchain) Name() string {
 	return "Binary"
 }
 
-func (bin *BinaryRunner) CanRun(filename string) bool {
+func (bin *BinaryToolchain) CanRun(filename string) bool {
 	info, err := os.Stat(filename)
 	if err != nil {
 		return false
@@ -58,7 +58,7 @@ func (bin *BinaryRunner) CanRun(filename string) bool {
 	return executable
 }
 
-func (bin *BinaryRunner) Start(cmd Cmd) (StartedCmd, error) {
+func (bin *BinaryToolchain) Start(cmd Cmd) (StartedCmd, error) {
 	c := exec.Command(cmd.Path, cmd.Args...)
 	c.Stdin = cmd.Stdin
 	c.Stdout = cmd.Stdout

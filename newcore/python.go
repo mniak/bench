@@ -28,33 +28,33 @@ func testProgram(program string, moreArgs ...string) error {
 	return nil
 }
 
-func (py *_PythonLoader) LoadRunner() (Runner, error) {
-	var runner _PythonRunner
+func (py *_PythonLoader) Load() (Toolchain, error) {
+	var toolchain _PythonToolchain
 	for _, program := range []string{
 		"python3", "python",
 	} {
 		err := testProgram(program, "--version")
 		if err == nil {
-			runner.Command = program
-			return &runner, nil
+			toolchain.Command = program
+			return &toolchain, nil
 		}
 	}
-	return nil, errors.New("runner not loaded: python not found")
+	return nil, errors.New("toolchain not loaded: python not found")
 }
 
-func (py *_PythonLoader) RunnerType() reflect.Type {
-	return reflect.TypeOf(_PythonRunner{})
+func (py *_PythonLoader) ToolchainType() reflect.Type {
+	return reflect.TypeOf(_PythonToolchain{})
 }
 
-type _PythonRunner struct {
+type _PythonToolchain struct {
 	Command string
 }
 
-func (py *_PythonRunner) Name() string {
+func (py *_PythonToolchain) Name() string {
 	return "Python"
 }
 
-func (py *_PythonRunner) CanRun(filename string) bool {
+func (py *_PythonToolchain) CanRun(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch extension {
 	case ".py":
@@ -64,7 +64,7 @@ func (py *_PythonRunner) CanRun(filename string) bool {
 	}
 }
 
-func (py *_PythonRunner) Start(cmd Cmd) (StartedCmd, error) {
+func (py *_PythonToolchain) Start(cmd Cmd) (StartedCmd, error) {
 	args := append([]string{cmd.Path}, cmd.Args...)
 	c := exec.Command("python", args...)
 	c.Stdin = cmd.Stdin

@@ -10,14 +10,27 @@ import (
 	"github.com/pkg/errors"
 )
 
-var runnerLoaders = []RunnerLoader{
+type ToolchainLoader interface {
+	Name() string
+	Load() (Toolchain, error)
+	ToolchainType() reflect.Type
+}
+
+type Toolchain interface {
+	Name() string
+	// CanRun(filename string) bool
+	// CanCompile(filename string) bool
+	// Compile(input ToolchainInput) (*Artifact, error)
+}
+
+var toolchainLoaders = []ToolchainLoader{
 	new(_PythonLoader),
 	new(BinaryLoader),
 }
 
 type (
-	RunnersList []Runner
-	Named       interface {
+	ToolchainsList []Toolchain
+	Named          interface {
 		Name() string
 	}
 )
@@ -60,17 +73,17 @@ func UnmarshalNamedList[T Named](known map[string]reflect.Type, b []byte) ([]T, 
 	return list, nil
 }
 
-func (list RunnersList) MarshalJSON() ([]byte, error) {
-	return MarshalNamedList[Runner](list)
+func (list ToolchainsList) MarshalJSON() ([]byte, error) {
+	return MarshalNamedList[Toolchain](list)
 }
 
-func (list *RunnersList) UnmarshalJSON(b []byte) error {
+func (list *ToolchainsList) UnmarshalJSON(b []byte) error {
 	known := make(map[string]reflect.Type)
-	for _, l := range runnerLoaders {
-		known[l.Name()] = l.RunnerType()
+	for _, l := range toolchainLoaders {
+		known[l.Name()] = l.ToolchainType()
 	}
 
-	result, err := UnmarshalNamedList[Runner](known, b)
+	result, err := UnmarshalNamedList[Toolchain](known, b)
 	if err != nil {
 		return err
 	}
@@ -78,89 +91,37 @@ func (list *RunnersList) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func loadRunners() RunnersList {
-	var runners RunnersList
-	for _, loader := range runnerLoaders {
-		r, err := loader.LoadRunner()
+func RebuildCache() (ToolchainsList, error) {
+	toolchains := loadToolchains()
+	err := cache.JSONStore("toolchains.json", toolchains)
+	if err != nil {
+		return nil, err
+	}
+	return toolchains, err
+}
+
+func loadToolchains() ToolchainsList {
+	var toolchains ToolchainsList
+	for _, loader := range toolchainLoaders {
+		r, err := loader.Load()
 		if err != nil {
-			log.Printf("Failed to load runner %q", loader.Name())
+			log.Printf("Failed to load toolchain %q", loader.Name())
 			continue
 		}
-		log.Printf("Runner %q loaded", loader.Name())
-		runners = append(runners, r)
+		log.Printf("Toolchain %q loaded", loader.Name())
+		toolchains = append(toolchains, r)
 	}
-	return runners
+	return toolchains
 }
 
-var compilerLoaders = []CompilerLoader{
-	new(_GoLoader),
-}
-
-type CompilersList []Compiler
-
-func (list CompilersList) MarshalJSON() ([]byte, error) {
-	var result []any
-	for _, r := range list {
-		v := reflect.ValueOf(r).Elem()
-		result = append(result, map[string]any{
-			"kind":   r.Name(),
-			"params": v.Interface(),
-		})
-	}
-	return json.Marshal(result)
-}
-
-func (list *CompilersList) UnmarshalJSON(b []byte) error {
-	known := make(map[string]reflect.Type)
-	for _, l := range compilerLoaders {
-		known[l.Name()] = l.CompilerType()
-	}
-
-	result, err := UnmarshalNamedList[Compiler](known, b)
-	if err != nil {
-		return err
-	}
-	*list = result
-	return nil
-}
-
-func loadCompilers() CompilersList {
-	var compilers CompilersList
-	for _, loader := range compilerLoaders {
-		r, err := loader.LoadCompiler()
-		if err != nil {
-			log.Printf("Failed to load compiler %q", loader.Name())
-			continue
-		}
-		log.Printf("Compiler %q loaded", loader.Name())
-		compilers = append(compilers, r)
-	}
-	return compilers
-}
-
-func RebuildCache() (RunnersList, CompilersList, error) {
-	runners := loadRunners()
-	err := cache.JSONStore("runners.json", runners)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	compilers := loadCompilers()
-	err = cache.JSONStore("compilers.json", compilers)
-	if err != nil {
-		return nil, nil, err
-	}
-	return runners, compilers, err
-}
-
-// Runners returns a list of runners, using a cache
-func Runners() RunnersList {
-	result, err := cache.JSONCache("runners.json", func() (RunnersList, error) {
-		runners := loadRunners()
-		return runners, nil
+// Toolchains returns a list of toolchains, using a cache
+func Toolchains() ToolchainsList {
+	result, err := cache.JSONCache("toolchains.json", func() (ToolchainsList, error) {
+		toolchains := loadToolchains()
+		return toolchains, nil
 	})
 	if err != nil {
-		log.Printf("Failed to load runners from cache: %s", err)
+		log.Printf("Failed to load toolchains from cache: %s", err)
 	}
 	return result
 }
@@ -171,7 +132,11 @@ func RunnerFor(filename string) (Runner, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, runner := range Runners() {
+	for _, toolchain := range Toolchains() {
+		runner, ok := toolchain.(Runner)
+		if !ok {
+			continue
+		}
 		can := runner.CanRun(filename)
 		if can {
 			return runner, nil
@@ -180,29 +145,40 @@ func RunnerFor(filename string) (Runner, error) {
 	return nil, errors.New("no suitable runner found for file")
 }
 
-// Compilers returns a list of compilers, using a cache
-func Compilers() CompilersList {
-	result, err := cache.JSONCache("compilers.json", func() (CompilersList, error) {
-		compilers := loadCompilers()
-		return compilers, nil
-	})
-	if err != nil {
-		log.Printf("Failed to load compilers from cache: %s", err)
-	}
-	return result
-}
-
 // CompilerFor tries to find a suitable compiler for a specific file
 func CompilerFor(filename string) (Compiler, error) {
 	_, err := os.Stat(filename)
 	if err != nil {
 		return nil, err
 	}
-	for _, compiler := range Compilers() {
-		can := compiler.SupportsFile(filename)
+	for _, toolchain := range Toolchains() {
+		compiler, ok := toolchain.(Compiler)
+		if !ok {
+			continue
+		}
+		can := compiler.CanCompile(filename)
 		if can {
 			return compiler, nil
 		}
 	}
 	return nil, errors.New("no suitable compiler found for file")
+}
+
+// FinderFor tries to find a suitable finder for a specific file
+func FinderFor(filename string) (Finder, error) {
+	_, err := os.Stat(filename)
+	if err != nil {
+		return nil, err
+	}
+	for _, toolchain := range Toolchains() {
+		finder, ok := toolchain.(Finder)
+		if !ok {
+			continue
+		}
+		can := finder.CanCompile(filename)
+		if can {
+			return finder, nil
+		}
+	}
+	return nil, errors.New("no suitable finder found for file")
 }
