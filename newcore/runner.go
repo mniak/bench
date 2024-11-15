@@ -2,45 +2,68 @@ package newcore
 
 import (
 	"io"
+	"os"
 	"os/exec"
+
+	"github.com/pkg/errors"
 )
 
 type Runner interface {
 	Toolchain
 	CanRun(filename string) bool
-	Start(cmd Cmd) (StartedCmd, error)
+	Start(program string, a RunArgs) (StartedProgram, error)
+	RunnerInputExtensions() []string
 }
 
-func StartAndWait(r Runner, cmd Cmd) error {
-	startedCmd, err := r.Start(cmd)
+func StartAndWait(r Runner, program string, a RunArgs) error {
+	startedCmd, err := r.Start(program, a)
 	if err != nil {
 		return err
 	}
 	return startedCmd.Wait()
 }
 
-type StartedCmd interface {
+type StartedProgram interface {
 	Wait() error
 }
 
-func (c *_StartedRunnerCmd) Wait() error {
+func (c *startedProgramImpl) Wait() error {
 	return c.cmd.Wait()
 }
 
-type Cmd struct {
-	Path   string
+type RunArgs struct {
 	Args   []string
 	Stdin  io.Reader
 	Stdout io.Writer
 	Stderr io.Writer
 }
 
-type _StartedRunnerCmd struct {
+type startedProgramImpl struct {
 	cmd *exec.Cmd
 }
 
-func newStartedRunnerCmd(cmd *exec.Cmd) *_StartedRunnerCmd {
-	return &_StartedRunnerCmd{
+func newStartedRunnerCmd(cmd *exec.Cmd) *startedProgramImpl {
+	return &startedProgramImpl{
 		cmd: cmd,
 	}
+}
+
+// RunnerFor tries to find a suitable runner for a specific file
+func RunnerFor(filename string) (Runner, error) {
+	_, err := os.Stat(filename)
+	if err != nil {
+		return nil, err
+	}
+	for runner := range iterateToolchains[Runner] {
+		can := runner.CanRun(filename)
+		if can {
+			return runner, nil
+		}
+	}
+
+	binaryRunner := BinaryRunner()
+	if binaryRunner.CanRun(filename) {
+		return binaryRunner, nil
+	}
+	return nil, errors.New("no suitable runner found for file")
 }

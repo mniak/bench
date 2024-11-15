@@ -19,18 +19,18 @@ func runCmd() *cobra.Command {
 	return &cmd
 }
 
-func Run(filename string, args ...string) error {
-	r, err := newcore.RunnerFor(filename)
+func Run(program string, args ...string) error {
+	r, err := newcore.RunnerFor(program)
 	if err != nil {
 		return err
 	}
-	cmd, err := r.Start(newcore.Cmd{
-		Path:   filename,
+	a := newcore.RunArgs{
 		Args:   args,
 		Stdin:  os.Stdin,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
-	})
+	}
+	cmd, err := r.Start(program, a)
 	if err != nil {
 		return err
 	}

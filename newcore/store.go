@@ -3,11 +3,9 @@ package newcore
 import (
 	"encoding/json"
 	"log"
-	"os"
 	"reflect"
 
 	"github.com/mniak/bench/pkg/cache"
-	"github.com/pkg/errors"
 )
 
 type ToolchainLoader interface {
@@ -17,15 +15,12 @@ type ToolchainLoader interface {
 
 type (
 	ToolchainsList []Toolchain
-	Toolchain      interface {
-		Name() string
-	}
+	Toolchain      interface{}
 )
 
 var toolchainLoaders = []ToolchainLoader{
 	new(GoLoader),
 	new(PythonLoader),
-	new(BinaryLoader),
 }
 
 func MarshalList[T any](list []T) ([]byte, error) {
@@ -132,34 +127,4 @@ func iterateToolchains[T Toolchain](yield func(T) bool) {
 			return
 		}
 	}
-}
-
-// RunnerFor tries to find a suitable runner for a specific file
-func RunnerFor(filename string) (Runner, error) {
-	_, err := os.Stat(filename)
-	if err != nil {
-		return nil, err
-	}
-	for runner := range iterateToolchains[Runner] {
-		can := runner.CanRun(filename)
-		if can {
-			return runner, nil
-		}
-	}
-	return nil, errors.New("no suitable runner found for file")
-}
-
-// CompilerFor tries to find a suitable compiler for a specific file
-func CompilerFor(filename string) (Compiler, error) {
-	_, err := os.Stat(filename)
-	if err != nil {
-		return nil, err
-	}
-	for compiler := range iterateToolchains[Compiler] {
-		can := compiler.CanCompile(filename)
-		if can {
-			return compiler, nil
-		}
-	}
-	return nil, errors.New("no suitable compiler found for file")
 }

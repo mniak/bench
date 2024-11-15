@@ -21,10 +21,6 @@ func (l *GoLoader) ToolchainType() reflect.Type {
 
 type _GoToolchain struct{}
 
-func (g *_GoToolchain) Name() string {
-	return "Go"
-}
-
 func (g *_GoToolchain) findRoot(filename string) (string, bool) {
 	info, err := os.Stat(filename)
 	if err != nil {
@@ -36,17 +32,17 @@ func (g *_GoToolchain) findRoot(filename string) (string, bool) {
 	return "", false
 }
 
-func (g *_GoToolchain) Compile(input CompilerInput) (*Artifact, error) {
+func (g *_GoToolchain) Compile(input CompilationInput) error {
 	newWorkingDir := filepath.Dir(input.Filename)
 
 	inputFilename, err := filepath.Rel(newWorkingDir, input.Filename)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	outputFilename, err := filepath.Abs(input.OutputFilename)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	cmd := exec.Command(
@@ -64,10 +60,10 @@ func (g *_GoToolchain) Compile(input CompilerInput) (*Artifact, error) {
 
 	err = cmd.Run()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &Artifact{}, nil
+	return nil
 }
 
 func (g *_GoToolchain) CanCompile(filename string) bool {
@@ -78,4 +74,8 @@ func (g *_GoToolchain) CanCompile(filename string) bool {
 	default:
 		return false
 	}
+}
+
+func (g *_GoToolchain) CompilerInputExtensions() []string {
+	return []string{".go"}
 }

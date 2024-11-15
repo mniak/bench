@@ -7,6 +7,7 @@ import (
 
 	"github.com/andreyvit/diff"
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 )
 
 type (
@@ -38,31 +39,39 @@ type _StartedTest struct {
 	stdin  *bytes.Buffer
 	stdout *bytes.Buffer
 	stderr *bytes.Buffer
-	cmd    StartedCmd
+	cmd    StartedProgram
 
 	expectedOutput string
 }
 
 func StartTest(t Test) (StartedTest, error) {
-	r, err := RunnerFor(t.Program)
-	if err != nil {
-		return nil, err
+	prog, err := FindProgram(t.Program)
+	cobra.CheckErr(err)
+	if prog == nil {
+		cobra.CheckErr("could not find the specified test")
 	}
 
 	var stdin bytes.Buffer
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
-	cmd := Cmd{
-		Path:   t.Program,
+	runArgs := RunArgs{
 		Stdin:  &stdin,
 		Stdout: &stdout,
 		Stderr: &stderr,
 	}
-	run, err := r.Start(cmd)
+	var run StartedProgram
+	if prog != nil {
+		run, err = prog.Run(runArgs)
+	} else {
+		r, err := RunnerFor(t.Program)
+		if err != nil {
+			return nil, err
+		}
+		run, err = r.Start(t.Program, runArgs)
+	}
 	if err != nil {
 		return nil, err
 	}
-	// CompilerFor()
 	started := _StartedTest{
 		cmd:    run,
 		stdin:  &stdin,

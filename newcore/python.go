@@ -46,10 +46,6 @@ type _PythonToolchain struct {
 	Command string
 }
 
-func (py *_PythonToolchain) Name() string {
-	return "Python"
-}
-
 func (py *_PythonToolchain) CanRun(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch extension {
@@ -60,15 +56,19 @@ func (py *_PythonToolchain) CanRun(filename string) bool {
 	}
 }
 
-func (py *_PythonToolchain) Start(cmd Cmd) (StartedCmd, error) {
-	args := append([]string{cmd.Path}, cmd.Args...)
+func (py *_PythonToolchain) Start(programPath string, a RunArgs) (StartedProgram, error) {
+	args := append([]string{programPath}, a.Args...)
 	c := exec.Command("python", args...)
-	c.Stdin = cmd.Stdin
-	c.Stdout = cmd.Stdout
-	c.Stderr = cmd.Stderr
+	c.Stdin = a.Stdin
+	c.Stdout = a.Stdout
+	c.Stderr = a.Stderr
 	err := c.Start()
 	if err != nil {
 		return nil, err
 	}
 	return newStartedRunnerCmd(c), nil
+}
+
+func (py *_PythonToolchain) RunnerInputExtensions() []string {
+	return []string{".py"}
 }

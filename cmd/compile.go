@@ -33,13 +33,12 @@ func Compile(filename string, output string) error {
 	// }
 	// defer os.Remove(outFile.Name())
 
-	artifact, err := c.Compile(newcore.CompilerInput{
+	err = c.Compile(newcore.CompilationInput{
 		Filename:       filename,
 		OutputFilename: output,
 	})
 	if err != nil {
 		return err
 	}
-	_ = artifact
 	return nil
 }

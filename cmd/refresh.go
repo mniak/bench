@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"reflect"
 
 	"github.com/mniak/bench/newcore"
 	"github.com/spf13/cobra"
@@ -10,12 +11,12 @@ import (
 func refreshCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "refresh",
-		Short: "Rebuild runners cache",
+		Short: "Rebuild toolchains cache",
 		Run: func(cmd *cobra.Command, args []string) {
 			toolchains, err := newcore.RebuildCache()
-			fmt.Printf("%d toolchains detected:\n", len(toolchains))
+			log.Printf("%d toolchains detected:\n", len(toolchains))
 			for _, r := range toolchains {
-				fmt.Printf(" - %s\n", r.Name())
+				log.Printf(" - %s\n", reflect.TypeOf(r).Elem().Name())
 			}
 			cobra.CheckErr(err)
 		},
