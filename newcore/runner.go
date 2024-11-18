@@ -11,7 +11,7 @@ import (
 type Runner interface {
 	Toolchain
 	CanRun(filename string) bool
-	Start(program string, a RunArgs) (StartedProgram, error)
+	Start(program string, a RunArgs) (Waiter, error)
 	RunnerInputExtensions() []string
 }
 
@@ -23,7 +23,7 @@ func StartAndWait(r Runner, program string, a RunArgs) error {
 	return startedCmd.Wait()
 }
 
-type StartedProgram interface {
+type Waiter interface {
 	Wait() error
 }
 

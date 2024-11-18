@@ -2,6 +2,7 @@ package newcore
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -67,7 +68,7 @@ type Program struct {
 	Runner   Runner
 }
 
-func (p Program) Run(a RunArgs) (StartedProgram, error) {
+func (p Program) Run(a RunArgs) (waiter Waiter, err error) {
 	if p.Runner != nil {
 		return p.Runner.Start(p.Program, a)
 	}
@@ -76,8 +77,11 @@ func (p Program) Run(a RunArgs) (StartedProgram, error) {
 		if err != nil {
 			return nil, err
 		}
-		// defer os.Remove(temp.Name())
-		defer temp.Close()
+		defer func() {
+			if err != nil {
+				temp.Close()
+			}
+		}()
 
 		err = p.Compiler.Compile(CompilationInput{
 			Stdin:          a.Stdin,
@@ -90,11 +94,34 @@ func (p Program) Run(a RunArgs) (StartedProgram, error) {
 			return nil, err
 		}
 
-		go run()
-
 		binr := BinaryRunner()
-		return binr.Start(temp.Name(), a)
+		started, err := binr.Start(temp.Name(), a)
+		if err != nil {
+			return nil, err
+		}
+
+		return callbackWaiter{
+			waiter: started,
+			callback: func() {
+				fmt.Printf("Would remove file %s\n", temp.Name())
+				// defer os.Remove(temp.Name())
+			},
+		}, nil
 
 	}
 	return nil, errors.New("invalid program found. must have a compiler or a runner attached.")
+}
+
+type callbackWaiter struct {
+	waiter   Waiter
+	callback func()
+}
+
+func (w callbackWaiter) Wait() error {
+	defer func() {
+		if w.callback != nil {
+			w.callback()
+		}
+	}()
+	return w.waiter.Wait()
 }

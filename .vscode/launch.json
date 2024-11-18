@@ -9,7 +9,7 @@
             "program": "${workspaceFolder}/cmd",
             "cwd": "${workspaceFolder}/../exercises",
             "args": [
-                "test", "hackerrank\\challenges\\array-ds",
+                "test", "hackerrank/challenges/array-ds",
                 "-i", "4\n1 4 3 2",
                 "-o", "2 3 4 1",
             ]

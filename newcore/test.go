@@ -39,7 +39,7 @@ type _StartedTest struct {
 	stdin  *bytes.Buffer
 	stdout *bytes.Buffer
 	stderr *bytes.Buffer
-	cmd    StartedProgram
+	cmd    Waiter
 
 	expectedOutput string
 }
@@ -59,7 +59,7 @@ func StartTest(t Test) (StartedTest, error) {
 		Stdout: &stdout,
 		Stderr: &stderr,
 	}
-	var run StartedProgram
+	var run Waiter
 	if prog != nil {
 		run, err = prog.Run(runArgs)
 	} else {

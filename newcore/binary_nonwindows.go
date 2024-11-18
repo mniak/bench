@@ -26,7 +26,7 @@ func (bin _NonWindowsBinaryRunner) CanRun(filename string) bool {
 	return executable
 }
 
-func (bin _NonWindowsBinaryRunner) Start(program string, a RunArgs) (StartedCmd, error) {
+func (bin _NonWindowsBinaryRunner) Start(program string, a RunArgs) (Waiter, error) {
 	c := exec.Command(program, a.Args...)
 	c.Stdin = a.Stdin
 	c.Stdout = a.Stdout

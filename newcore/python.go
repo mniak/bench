@@ -56,7 +56,7 @@ func (py *_PythonToolchain) CanRun(filename string) bool {
 	}
 }
 
-func (py *_PythonToolchain) Start(programPath string, a RunArgs) (StartedProgram, error) {
+func (py *_PythonToolchain) Start(programPath string, a RunArgs) (Waiter, error) {
 	args := append([]string{programPath}, a.Args...)
 	c := exec.Command("python", args...)
 	c.Stdin = a.Stdin
