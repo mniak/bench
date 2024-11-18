@@ -41,7 +41,7 @@ func (bin _WindowsBinaryRunner) CanRun(filename string) bool {
 	return true
 }
 
-func (bin _WindowsBinaryRunner) Start(program string, a RunArgs) (StartedProgram, error) {
+func (bin _WindowsBinaryRunner) Start(program string, a RunArgs) (Waiter, error) {
 	c := exec.Command(program, a.Args...)
 	c.Stdin = a.Stdin
 	c.Stdout = a.Stdout
