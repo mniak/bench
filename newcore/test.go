@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/andreyvit/diff"
 	"github.com/pkg/errors"
@@ -63,9 +64,10 @@ func StartTest(t Test) (StartedTest, error) {
 		return nil, err
 	}
 	started := _StartedTest{
-		cmd:    run,
-		stdout: &stdout,
-		stderr: &stderr,
+		cmd:            run,
+		stdout:         &stdout,
+		stderr:         &stderr,
+		expectedOutput: t.ExpectedOutput,
 	}
 	return &started, nil
 }
@@ -100,17 +102,23 @@ func WaitTest(t StartedTest) (result TestResult, err error) {
 		return
 	}
 
-	expected := t.ExpectedOutput()
-	if expected != result.Output {
+	expected := normalizeOutput(t.ExpectedOutput())
+	output := normalizeOutput(result.Output)
+	if expected != output {
 
 		err = &WrongOutputError{
 			Expected: expected,
-			Actual:   result.Output,
+			Actual:   output,
 		}
 
 		return
 	}
 	return
+}
+
+func normalizeOutput(text string) string {
+	text = strings.ReplaceAll(text, "\r\n", "\n")
+	return text
 }
 
 type WrongOutputError struct {

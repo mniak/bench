@@ -11,7 +11,7 @@
             "args": [
                 "test", "hackerrank/challenges/ctci-array-left-rotation",
                 "-i", "5 4\n1 2 3 4 5",
-                "-o", "5 1 2 3 4",
+                "-o", "5 1 2 3 4\n",
             ]
         }
     ]
