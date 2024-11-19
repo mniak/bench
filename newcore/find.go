@@ -2,7 +2,6 @@ package newcore
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -77,6 +76,7 @@ func (p Program) Run(a RunArgs) (waiter Waiter, err error) {
 		if err != nil {
 			return nil, err
 		}
+		temp.Close()
 		defer func() {
 			if err != nil {
 				temp.Close()
@@ -103,8 +103,7 @@ func (p Program) Run(a RunArgs) (waiter Waiter, err error) {
 		return callbackWaiter{
 			waiter: started,
 			callback: func() {
-				fmt.Printf("Would remove file %s\n", temp.Name())
-				// defer os.Remove(temp.Name())
+				defer os.Remove(temp.Name())
 			},
 		}, nil
 

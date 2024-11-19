@@ -50,14 +50,12 @@ func testCmd() *cobra.Command {
 func runTest(test newcore.Test, testName string) error {
 	started, err := newcore.StartTest(test)
 	cobra.CheckErr(err)
-
 	if test.Input != "" {
 		fmt.Println("------------- INPUT -------------")
 		fmt.Println(test.Input)
 	}
 
 	r, err := newcore.WaitTest(started)
-
 	if r.Output != "" {
 		fmt.Println("------------- OUTPUT ------------")
 		fmt.Println(r.Output)

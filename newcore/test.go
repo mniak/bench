@@ -3,6 +3,7 @@ package newcore
 import (
 	"bytes"
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"github.com/andreyvit/diff"
@@ -60,18 +61,11 @@ func StartTest(t Test) (StartedTest, error) {
 		Stderr: &stderr,
 	}
 	var run Waiter
-	if prog != nil {
-		run, err = prog.Run(runArgs)
-	} else {
-		r, err := RunnerFor(t.Program)
-		if err != nil {
-			return nil, err
-		}
-		run, err = r.Start(t.Program, runArgs)
-	}
+	run, err = prog.Run(runArgs)
 	if err != nil {
 		return nil, err
 	}
+	stdin.WriteString(t.Input)
 	started := _StartedTest{
 		cmd:    run,
 		stdin:  &stdin,
@@ -103,13 +97,17 @@ func (s *_StartedTest) ExpectedOutput() string {
 
 func WaitTest(t StartedTest) (result TestResult, err error) {
 	err = t.Wait()
-	if err != nil {
-		err = errors.Wrap(err, "program wait failed")
-		return
-	}
-
 	result.Output = t.Stdout().String()
 	result.ErrorOutput = t.Stderr().String()
+	if err != nil {
+		exitErr := new(exec.ExitError)
+		if errors.As(err, &exitErr) {
+			err = fmt.Errorf("program failed with status code %d", exitErr.ExitCode())
+		} else {
+			err = errors.Wrap(err, "program wait failed")
+		}
+		return
+	}
 
 	if strings.Compare(t.ExpectedOutput(), result.Output) != 0 {
 		err = fmt.Errorf("output expectation not satisfied\n%s",
