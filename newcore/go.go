@@ -1,12 +1,10 @@
 package newcore
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"strings"
 )
 
 type GoLoader struct{}
@@ -50,13 +48,10 @@ func (g *_GoToolchain) Compile(input CompilationInput) error {
 		"-o", outputFilename,
 		inputFilename,
 	)
-	// cmd.Dir = dir
 	cmd.Dir = newWorkingDir
 	cmd.Stdin = input.Stdin
 	cmd.Stdout = input.Stdout
 	cmd.Stderr = input.Stderr
-
-	fmt.Println("Go Command:", strings.Join(cmd.Args, " "))
 
 	err = cmd.Run()
 	if err != nil {
