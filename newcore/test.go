@@ -17,7 +17,6 @@ type (
 		ExpectedOutput string
 	}
 	StartedTest interface {
-		Stdin() *bytes.Buffer
 		Stdout() *bytes.Buffer
 		Stderr() *bytes.Buffer
 		Wait() error
@@ -36,7 +35,6 @@ type Tester interface {
 }
 
 type _StartedTest struct {
-	stdin  *bytes.Buffer
 	stdout *bytes.Buffer
 	stderr *bytes.Buffer
 	cmd    Waiter
@@ -51,11 +49,11 @@ func StartTest(t Test) (StartedTest, error) {
 		cobra.CheckErr("could not find the specified test")
 	}
 
-	var stdin bytes.Buffer
+	stdin := bytes.NewBufferString(t.Input)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	runArgs := RunArgs{
-		Stdin:  &stdin,
+		Stdin:  stdin,
 		Stdout: &stdout,
 		Stderr: &stderr,
 	}
@@ -67,15 +65,10 @@ func StartTest(t Test) (StartedTest, error) {
 	stdin.WriteString(t.Input)
 	started := _StartedTest{
 		cmd:    run,
-		stdin:  &stdin,
 		stdout: &stdout,
 		stderr: &stderr,
 	}
 	return &started, nil
-}
-
-func (s *_StartedTest) Stdin() *bytes.Buffer {
-	return s.stdin
 }
 
 func (s *_StartedTest) Stdout() *bytes.Buffer {

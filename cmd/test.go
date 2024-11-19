@@ -78,7 +78,7 @@ func runTest(test newcore.Test, testName string) error {
 		fmt.Println(strings.TrimSuffix(test.ExpectedOutput, "\n"))
 
 		if wo, ok := err.(*newcore.WrongOutputError); ok {
-			fmt.Println("-------------- DIFF -------------")
+			fmt.Println("----------- DIFF BEGIN ----------")
 			fmt.Println(diff.LineDiff(wo.Expected, wo.Actual))
 			fmt.Println("------------ DIFF END -----------")
 		}
