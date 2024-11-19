@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"strings"
 
 	"github.com/andreyvit/diff"
 	"github.com/pkg/errors"
@@ -109,11 +108,26 @@ func WaitTest(t StartedTest) (result TestResult, err error) {
 		return
 	}
 
-	if strings.Compare(t.ExpectedOutput(), result.Output) != 0 {
-		err = fmt.Errorf("output expectation not satisfied\n%s",
-			diff.LineDiff(t.ExpectedOutput(), result.Output),
-		)
+	expected := t.ExpectedOutput()
+	if expected != result.Output {
+
+		err = &WrongOutputError{
+			Expected: expected,
+			Actual:   result.Output,
+		}
+
 		return
 	}
 	return
+}
+
+type WrongOutputError struct {
+	Expected string
+	Actual   string
+}
+
+func (wo *WrongOutputError) Error() string {
+	return fmt.Sprintf("output expectation not satisfied\n%s",
+		diff.LineDiff(wo.Expected, wo.Actual),
+	)
 }

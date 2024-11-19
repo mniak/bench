@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/andreyvit/diff"
 	"github.com/mniak/bench/newcore"
 	"github.com/spf13/cobra"
 )
@@ -58,11 +59,11 @@ func runTest(test newcore.Test, testName string) error {
 	r, err := newcore.WaitTest(started)
 	if r.Output != "" {
 		fmt.Println("------------- OUTPUT ------------")
-		fmt.Println(r.Output)
+		fmt.Println(strings.TrimSuffix(r.Output, "\n"))
 	}
 	if r.ErrorOutput != "" {
 		fmt.Println("------------- ERROR -------------")
-		fmt.Println(r.ErrorOutput)
+		fmt.Println(strings.TrimSuffix(r.ErrorOutput, "\n"))
 	}
 
 	var template string
@@ -74,12 +75,13 @@ func runTest(test newcore.Test, testName string) error {
 
 	if err != nil {
 		fmt.Println("-------- EXPECTED OUTPUT --------")
-		fmt.Println(test.ExpectedOutput)
+		fmt.Println(strings.TrimSuffix(test.ExpectedOutput, "\n"))
 
-		const spaces = "  "
-		fmt.Fprintf(os.Stderr, template, "FAIL",
-			strings.ReplaceAll(err.Error(), "\n", "\n"+spaces),
-		)
+		if wo, ok := err.(*newcore.WrongOutputError); ok {
+			fmt.Println("-------------- DIFF -------------")
+			fmt.Println(diff.LineDiff(wo.Expected, wo.Actual))
+			fmt.Println("------------ DIFF END -----------")
+		}
 		os.Exit(2)
 	}
 	fmt.Printf(template, "PASS", testName)
