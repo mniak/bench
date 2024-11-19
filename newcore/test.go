@@ -62,7 +62,6 @@ func StartTest(t Test) (StartedTest, error) {
 	if err != nil {
 		return nil, err
 	}
-	stdin.WriteString(t.Input)
 	started := _StartedTest{
 		cmd:    run,
 		stdout: &stdout,

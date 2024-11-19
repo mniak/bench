@@ -1,7 +1,9 @@
 package newcore
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -83,14 +85,18 @@ func (p Program) Run(a RunArgs) (waiter Waiter, err error) {
 			}
 		}()
 
+		var compileOut bytes.Buffer
+		var compileErr bytes.Buffer
+
 		err = p.Compiler.Compile(CompilationInput{
-			Stdin:          a.Stdin,
-			Stdout:         a.Stdout,
-			Stderr:         a.Stderr,
+			Stdout:         &compileOut,
+			Stderr:         &compileErr,
 			Filename:       p.Program,
 			OutputFilename: temp.Name(),
 		})
 		if err != nil {
+			io.Copy(os.Stdout, &compileOut)
+			io.Copy(os.Stderr, &compileErr)
 			return nil, err
 		}
 

@@ -27,12 +27,6 @@ func Compile(filename string, output string) error {
 		return err
 	}
 
-	// outFile, err := os.CreateTemp("", "program*.exe")
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// defer os.Remove(outFile.Name())
-
 	err = c.Compile(newcore.CompilationInput{
 		Filename:       filename,
 		OutputFilename: output,
