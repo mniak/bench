@@ -9,9 +9,9 @@
             "program": "${workspaceFolder}/cmd",
             "cwd": "${workspaceFolder}/../exercises",
             "args": [
-                "test", "hackerrank/challenges/array-ds",
-                "-i", "4\n1 4 3 2",
-                "-o", "2 3 4 1",
+                "test", "hackerrank/challenges/ctci-array-left-rotation",
+                "-i", "5 4\n1 2 3 4 5",
+                "-o", "5 1 2 3 4",
             ]
         }
     ]

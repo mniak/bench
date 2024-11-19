@@ -5,12 +5,19 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+
+	"github.com/pkg/errors"
 )
 
 type GoLoader struct{}
 
 func (l *GoLoader) Load() (Toolchain, error) {
-	return &_GoToolchain{}, nil
+	var toolchain _GoToolchain
+	err := testProgram("go", "version")
+	if err == nil {
+		return &toolchain, nil
+	}
+	return nil, errors.New("toolchain not loaded: Go not found")
 }
 
 func (l *GoLoader) ToolchainType() reflect.Type {

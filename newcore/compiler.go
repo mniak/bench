@@ -7,7 +7,6 @@ import (
 )
 
 type Compiler interface {
-	Toolchain
 	CanCompile(filename string) bool
 	CompilerInputExtensions() []string
 	Compile(input CompilationInput) error

@@ -35,7 +35,7 @@ func (py *PythonLoader) Load() (Toolchain, error) {
 			return &toolchain, nil
 		}
 	}
-	return nil, errors.New("toolchain not loaded: python not found")
+	return nil, errors.New("toolchain not loaded: Python not found")
 }
 
 func (py *PythonLoader) ToolchainType() reflect.Type {

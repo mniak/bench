@@ -21,6 +21,7 @@ type (
 var toolchainLoaders = []ToolchainLoader{
 	new(GoLoader),
 	new(PythonLoader),
+	new(MSVCLoader),
 }
 
 func MarshalList[T any](list []T) ([]byte, error) {
