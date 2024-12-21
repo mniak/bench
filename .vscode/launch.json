@@ -2,11 +2,54 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Refresh",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}/cmd",
+            "args": [
+                "refresh",
+            ]
+        },
+        {
+            "name": "Compile Go Example",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd",
+            "cwd": "${workspaceFolder}/internal/examples",
+            "args": [
+                "compile",
+                "go/main.go",
+                "-o", "go/out/main.exe",
+            ],
+            
+        },
+        {
+            "name": "Run Go Example",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd",
+            "cwd": "${workspaceFolder}/internal/examples",
+            "args": [
+                "run",
+                "go/main.go",
+            ],
+            
+        },
+        {
+            "name": "Run Test",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd",
+            "cwd": "${workspaceFolder}/../exercises",
+            "args": [
+                "test", "hackerrank/challenges/ctci-array-left-rotation",
+                "-i", "5 4\n1 2 3 4 5",
+                "-o", "5 1 2 3 4\n",
+            ]
         }
     ]
 }
