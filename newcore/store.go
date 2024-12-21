@@ -96,7 +96,7 @@ func loadToolchains() ToolchainsList {
 		loaderTypeName := reflect.TypeOf(loader).Elem().Name()
 		r, err := loader.Load()
 		if err != nil {
-			log.Printf("Failed to load toolchain %T", loaderTypeName)
+			log.Printf("Failed to load toolchain %s", loaderTypeName)
 			continue
 		}
 		log.Printf("Toolchain %s loaded", loaderTypeName)
