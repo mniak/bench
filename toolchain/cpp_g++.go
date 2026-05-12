@@ -1,4 +1,5 @@
-//go:build linux || darwin
+//go:build linux || ignore || darwin
+// +build linux ignore darwin
 
 package toolchain
 

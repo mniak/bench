@@ -1,0 +1,7 @@
+{
+  "gopls": {
+    "analyses": {
+      "ST1000": false
+    }
+  }
+}
