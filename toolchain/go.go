@@ -28,10 +28,10 @@ func GoToolchainFactory() (domain.Toolchain, error) {
 
 	result.gopath, err = findBinaryPath("go")
 	if err != nil {
-		return &result, err
+		return nil, err
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 type _GoToolchain struct {

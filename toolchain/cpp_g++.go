@@ -27,7 +27,7 @@ func GPlusPlusToolchainFactory() (domain.Toolchain, error) {
 	return nil, ErrToolchainNotFound
 }
 
-func (tc *_GPlusPlusToolchain) Build(request domain.BuildRequest) error {
+func (tc _GPlusPlusToolchain) Build(request domain.BuildRequest) error {
 	workingDir, main, err := utils.SplitDirAndProgram(request.Input)
 	if err != nil {
 		return err
