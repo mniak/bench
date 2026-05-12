@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSplitProgramDir_WhenFile(t *testing.T) {
+func TestSplitDirAndProgram_WhenFile(t *testing.T) {
 	tempDir := os.TempDir()
 	file, err := os.CreateTemp(tempDir, "test_*")
 	require.NoError(t, err, "create temp file")
@@ -24,7 +24,7 @@ func TestSplitProgramDir_WhenFile(t *testing.T) {
 	assert.Equal(t, filepath.Base(file.Name()), program)
 }
 
-func TestSplitProgramDir_WhenFolder(t *testing.T) {
+func TestSplitDirAndProgram_WhenFolder(t *testing.T) {
 	tempDir := os.TempDir()
 	folder, err := os.MkdirTemp(tempDir, "test_*")
 	require.NoError(t, err, "create temp file")

@@ -23,7 +23,7 @@ type _MSVCToolchain struct {
 	verbose bool
 }
 
-func (tc *_MSVCToolchain) Build(request domain.BuildRequest) error {
+func (tc _MSVCToolchain) Build(request domain.BuildRequest) error {
 	workingDir, main, err := utils.SplitDirAndProgram(request.Input)
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func MSVCToolchainFactory() (domain.Toolchain, error) {
 
 	result.envvars, err = getVcVars()
 	if err != nil {
-		return &result, err
+		return nil, err
 	}
 	var paths []string
 	for _, v := range result.envvars {
@@ -153,8 +153,8 @@ func MSVCToolchainFactory() (domain.Toolchain, error) {
 
 	result.clpath, err = findBinaryPath("cl", paths...)
 	if err != nil {
-		return &result, err
+		return nil, err
 	}
 
-	return &result, nil
+	return result, nil
 }
