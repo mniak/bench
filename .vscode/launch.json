@@ -2,11 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Test Example: cpp",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}",
+            "args": [
+                "test", "examples/cpp",
+                "--input", "8\n",
+                "--output", "N=16\n"
+            ]
         }
     ]
 }
